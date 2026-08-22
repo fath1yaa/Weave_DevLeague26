@@ -1,0 +1,401 @@
+/* ===================================
+   Weave - Org Chart Styles
+   Visual hierarchy tree with animated transitions
+   =================================== */
+
+/* --- Chart Container --- */
+.orgchart-container {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: var(--spacing-xl) var(--spacing-md);
+    min-height: 400px;
+    position: relative;
+}
+
+.orgchart-scroll-hint {
+    display: none;
+    text-align: center;
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* --- Tree Structure --- */
+.org-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: fit-content;
+    padding: var(--spacing-md);
+}
+
+.org-tree ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    gap: var(--spacing-lg);
+}
+
+.org-tree li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-top: 28px;
+}
+
+/* --- Connecting Lines --- */
+/* Vertical line from parent down */
+.org-tree li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 28px;
+    background: var(--color-gray-300);
+    transform: translateX(-50%);
+}
+
+/* Horizontal connector line */
+.org-tree ul > li:not(:only-child)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-gray-300);
+    left: 0;
+}
+
+/* First child: horizontal line from center to right */
+.org-tree ul > li:first-child::after {
+    left: 50%;
+    width: 50%;
+}
+
+/* Last child: horizontal line from left to center */
+.org-tree ul > li:last-child::after {
+    left: 0;
+    width: 50%;
+}
+
+/* Only child: no horizontal line */
+.org-tree ul > li:only-child::after {
+    display: none;
+}
+
+/* Root node: no vertical line going up */
+.org-tree > ul > li::before {
+    display: none;
+}
+
+.org-tree > ul > li::after {
+    display: none;
+}
+
+/* Line going down from a node to its children */
+.org-tree li > ul::before {
+    content: '';
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    width: 2px;
+    height: 28px;
+    background: var(--color-gray-300);
+    transform: translateX(-50%);
+}
+
+.org-tree li > ul {
+    position: relative;
+    margin-top: 28px;
+}
+
+/* --- Node Card --- */
+.org-node {
+    background: var(--color-white);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    min-width: 180px;
+    max-width: 240px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+    animation: nodeAppear 0.4s ease-out both;
+}
+
+@keyframes nodeAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.org-node:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    z-index: 10;
+}
+
+.org-node:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-md);
+}
+
+/* --- Node Content --- */
+.org-node-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.org-node-person {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.org-node-person::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-success);
+    flex-shrink: 0;
+}
+
+.org-node-person.vacant::before {
+    background: var(--color-gray-300);
+}
+
+.org-node-person.vacant {
+    color: var(--color-gray-400);
+    font-style: italic;
+}
+
+.org-node-department {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* --- Department Colour Coding --- */
+.dept-engineering { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.dept-product { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+.dept-design { background: #fce7f3; color: #be185d; border: 1px solid #fbcfe8; }
+.dept-marketing { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.dept-sales { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+.dept-finance { background: #cffafe; color: #0e7490; border: 1px solid #a5f3fc; }
+.dept-hr { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+.dept-operations { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+.dept-executive { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+.dept-default { background: var(--color-gray-100); color: var(--color-gray-600); border: 1px solid var(--color-gray-200); }
+
+/* --- Node Highlight States --- */
+.org-node.highlight {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light), var(--shadow-md);
+}
+
+.org-node.fading-out {
+    animation: nodeFadeOut 0.3s ease-in forwards;
+}
+
+@keyframes nodeFadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+/* --- Node Tooltip (role_id) --- */
+.org-node::after {
+    content: attr(data-role-id);
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--color-gray-400);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    pointer-events: none;
+}
+
+.org-node:hover::after {
+    opacity: 1;
+}
+
+/* --- Root Node Special Styling --- */
+.org-node.root-node {
+    border-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-white) 100%);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.org-node.root-node .org-node-title {
+    color: var(--color-primary-dark);
+}
+
+/* --- Empty State --- */
+.orgchart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3xl);
+    text-align: center;
+    color: var(--color-gray-500);
+    min-height: 400px;
+}
+
+.orgchart-empty svg {
+    width: 80px;
+    height: 80px;
+    color: var(--color-gray-300);
+    margin-bottom: var(--spacing-lg);
+}
+
+.orgchart-empty h3 {
+    font-size: var(--font-size-xl);
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-sm);
+}
+
+.orgchart-empty p {
+    font-size: var(--font-size-sm);
+    max-width: 400px;
+}
+
+.orgchart-empty .btn {
+    margin-top: var(--spacing-lg);
+}
+
+/* --- Loading State --- */
+.orgchart-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3xl);
+    gap: var(--spacing-md);
+    min-height: 400px;
+}
+
+.orgchart-loading .spinner {
+    width: 36px;
+    height: 36px;
+}
+
+.orgchart-loading-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+}
+
+/* --- Animation Stagger for Children --- */
+.org-tree li:nth-child(1) .org-node { animation-delay: 0.05s; }
+.org-tree li:nth-child(2) .org-node { animation-delay: 0.1s; }
+.org-tree li:nth-child(3) .org-node { animation-delay: 0.15s; }
+.org-tree li:nth-child(4) .org-node { animation-delay: 0.2s; }
+.org-tree li:nth-child(5) .org-node { animation-delay: 0.25s; }
+.org-tree li:nth-child(6) .org-node { animation-delay: 0.3s; }
+.org-tree li:nth-child(7) .org-node { animation-delay: 0.35s; }
+.org-tree li:nth-child(8) .org-node { animation-delay: 0.4s; }
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+    .org-node {
+        min-width: 150px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .org-tree ul {
+        gap: var(--spacing-md);
+    }
+
+    .orgchart-scroll-hint {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .orgchart-container {
+        padding: var(--spacing-md) 0;
+    }
+
+    .org-node {
+        min-width: 130px;
+        max-width: 180px;
+        padding: var(--spacing-sm);
+    }
+
+    .org-node-title {
+        font-size: var(--font-size-xs);
+    }
+
+    .org-node-person {
+        font-size: var(--font-size-xs);
+    }
+
+    .org-tree li {
+        padding-top: 20px;
+    }
+
+    .org-tree li::before {
+        height: 20px;
+    }
+
+    .org-tree li > ul {
+        margin-top: 20px;
+    }
+
+    .org-tree li > ul::before {
+        top: -20px;
+        height: 20px;
+    }
+}
+
+/* --- Print Styles --- */
+@media print {
+    .orgchart-container {
+        overflow: visible;
+    }
+
+    .org-node {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
