@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weave - Organisational History Visualisation</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation Bar -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="container">
+                <a href="index.html" class="navbar-brand">
+                    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 20 C12 12, 20 12, 22 20" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M8 16 C12 8, 20 8, 24 16" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                    </svg>
+                    Weave
+                </a>
+
+                <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+
+                <ul class="navbar-nav">
+                    <li><a href="index.html" class="active">Dashboard</a></li>
+                    <li><a href="pages/upload.html">Upload</a></li>
+                    <li><a href="pages/orgchart.html">Org Chart</a></li>
+                    <li><a href="pages/role-history.html">Roles</a></li>
+                    <li><a href="pages/person-journey.html">People</a></li>
+                    <li><a href="pages/data-quality.html">Data Quality</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Hero Section -->
+                <section class="dashboard-hero">
+                    <h1>Organisational History, Visualised</h1>
+                    <p>Upload your organisational data, explore how roles evolved and people moved through the organisation over time.</p>
+                </section>
+
+                <!-- Feature Cards -->
+                <section class="feature-grid" aria-label="Application features">
+                    <!-- Upload CSV -->
+                    <a href="pages/upload.html" class="card card-link">
+                        <div class="card-icon primary" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Upload CSV Data</h3>
+                        <p class="card-description">Import roles, people, and events data from CSV files to reconstruct organisational history.</p>
+                    </a>
+
+                    <!-- Org Chart Timeline -->
+                    <a href="pages/orgchart.html" class="card card-link">
+                        <div class="card-icon secondary" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="2" width="6" height="4" rx="1"/>
+                                <rect x="2" y="14" width="6" height="4" rx="1"/>
+                                <rect x="16" y="14" width="6" height="4" rx="1"/>
+                                <line x1="12" y1="6" x2="12" y2="10"/>
+                                <line x1="5" y1="14" x2="5" y2="10"/>
+                                <line x1="19" y1="14" x2="19" y2="10"/>
+                                <line x1="5" y1="10" x2="19" y2="10"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Org Chart Timeline</h3>
+                        <p class="card-description">Explore the organisational structure at any point in time with an animated timeline slider.</p>
+                    </a>
+
+                    <!-- Role History -->
+                    <a href="pages/role-history.html" class="card card-link">
+                        <div class="card-icon success" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                                <path d="M16 7V5a4 4 0 0 0-8 0v2"/>
+                                <line x1="12" y1="12" x2="12" y2="16"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Role History</h3>
+                        <p class="card-description">Track how any role has evolved - title changes, reporting-line shifts, and who occupied it over time.</p>
+                    </a>
+
+                    <!-- Person Journey -->
+                    <a href="pages/person-journey.html" class="card card-link">
+                        <div class="card-icon warning" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Person Journey</h3>
+                        <p class="card-description">Follow a person's career path through the organisation - promotions, transfers, and department changes.</p>
+                    </a>
+
+                    <!-- Data Quality -->
+                    <a href="pages/data-quality.html" class="card card-link">
+                        <div class="card-icon info" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Data Quality</h3>
+                        <p class="card-description">Review and resolve data inconsistencies - missing fields, unmatched references, and duplicate records.</p>
+                    </a>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer" style="text-align: center; padding: var(--spacing-xl); color: var(--color-gray-500); font-size: var(--font-size-sm); border-top: 1px solid var(--color-gray-200);">
+            <p>Weave &mdash; Reconstructing organisational change over time | Lab 2 - People-Centric Tech &amp; Collaboration</p>
+        </footer>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

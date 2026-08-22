@@ -6,26 +6,26 @@ This plan breaks the Weave application into parallelisable tasks aligned with th
 
 ## Tasks
 
-- [ ] 1. Foundation: Database schema and shared utilities
-  - [ ] 1.1 Create MySQL database schema
+- [x] 1. Foundation: Database schema and shared utilities
+  - [x] 1.1 Create MySQL database schema
     - Create `database/schema.sql` with all table definitions: `roles`, `people`, `events`, `role_assignments`, `flagged_records`
     - Include indexes, foreign keys, ENUM types, and DEFAULT values as specified in the design
     - Create `database/seed.sql` with sample data for development (5-10 roles, 8-12 people, 15-20 events, sample assignments)
     - _Requirements: 7.4, 7.5_
 
-  - [ ] 1.2 Create PHP database connection and shared utilities
+  - [x] 1.2 Create PHP database connection and shared utilities
     - Create `api/includes/db.php` with PDO connection to MySQL (localhost XAMPP defaults)
     - Create `api/includes/helpers.php` with shared utility functions (JSON response helper, date validation, input sanitisation)
     - _Requirements: 7.3, 7.4_
 
-  - [ ] 1.3 Set up project directory structure and landing page
+  - [x] 1.3 Set up project directory structure and landing page
     - Create directory structure: `assets/css/`, `assets/js/`, `assets/img/`, `api/`, `api/includes/`, `pages/`, `database/`, `database/migrations/`
     - Create `index.html` as dashboard/landing page with navigation links to all feature pages
     - Create `assets/css/main.css` with global styles (layout, nav, typography, responsive grid)
     - Create `assets/js/app.js` with main application bootstrap (navigation helpers, shared event bus)
     - _Requirements: 7.2, 7.5_
 
-  - [ ] 1.4 Create README.md with project documentation
+  - [x] 1.4 Create README.md with project documentation
     - Write project overview, feature descriptions, XAMPP setup instructions
     - Document task allocation for 4 team members
     - Include database setup steps (import schema.sql)
