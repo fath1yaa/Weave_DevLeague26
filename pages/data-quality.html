@@ -44,7 +44,7 @@
         <main class="main-content">
             <div class="container">
                 <!-- Page Header -->
-                <div class="page-header">
+                <div class="page-header fade-in-up">
                     <h1>Data Quality</h1>
                     <p class="subtitle">Review, resolve, and track data integrity across your organisational records.</p>
                 </div>
@@ -58,7 +58,7 @@
                 <!-- Main Content (hidden until loaded) -->
                 <div id="dq-content" class="hidden">
                     <!-- Quality Score Dashboard -->
-                    <section class="quality-dashboard" aria-label="Data quality overview">
+                    <section class="quality-dashboard fade-in-up" aria-label="Data quality overview">
                         <!-- Radial Gauge -->
                         <div class="quality-gauge-wrapper">
                             <div class="quality-gauge" role="img" aria-label="Data quality score">
@@ -97,7 +97,7 @@
                     </section>
 
                     <!-- Category Filter Tabs -->
-                    <div class="category-tabs" role="tablist" aria-label="Filter by issue category">
+                    <div class="category-tabs fade-in-up" role="tablist" aria-label="Filter by issue category">
                         <button class="category-tab active" role="tab" aria-selected="true" data-category="all">
                             All <span class="category-tab-count" id="tab-count-all">0</span>
                         </button>
@@ -116,8 +116,8 @@
                     </div>
 
                     <!-- Flagged Records Section -->
-                    <section aria-label="Flagged records">
-                        <div class="section-header">
+                    <section class="fade-in-up" aria-label="Flagged records">
+                        <div class="section-header" style="text-align:left; margin-bottom: var(--spacing-lg);">
                             <h2>Flagged Records</h2>
                             <span class="record-count" id="visible-record-count">Showing 0 records</span>
                         </div>
@@ -142,7 +142,7 @@
         </main>
 
         <!-- Footer -->
-        <footer class="footer" style="text-align: center; padding: var(--spacing-xl); color: var(--color-gray-500); font-size: var(--font-size-sm); border-top: 1px solid var(--color-gray-200);">
+        <footer class="footer">
             <p>Weave &mdash; Reconstructing organisational change over time | Lab 2 - People-Centric Tech &amp; Collaboration</p>
         </footer>
     </div>

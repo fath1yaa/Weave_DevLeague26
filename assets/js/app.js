@@ -410,6 +410,93 @@ function debounce(fn, delay = 300) {
 
 
 // ============================================
+// Scroll Animations (IntersectionObserver)
+// ============================================
+
+const ScrollAnimations = (() => {
+    let observer = null;
+
+    /**
+     * Initialize scroll-triggered fade-in animations.
+     * Elements with class 'fade-in-up' will animate into view
+     * when they enter the viewport.
+     */
+    function init() {
+        // Check for IntersectionObserver support
+        if (!('IntersectionObserver' in window)) {
+            // Fallback: just make everything visible immediately
+            document.querySelectorAll('.fade-in-up').forEach(el => {
+                el.classList.add('visible');
+            });
+            return;
+        }
+
+        observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+    }
+
+    /**
+     * Observe new elements added dynamically
+     * @param {Element} el - Element to observe
+     */
+    function observe(el) {
+        if (observer && el) {
+            observer.observe(el);
+        }
+    }
+
+    return { init, observe };
+})();
+
+
+// ============================================
+// Navbar Scroll Effect
+// ============================================
+
+const NavbarScroll = (() => {
+    function init() {
+        const navbar = document.querySelector('.navbar');
+        if (!navbar) return;
+
+        let ticking = false;
+
+        function onScroll() {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    if (window.scrollY > 10) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        // Run once on load in case page is already scrolled
+        onScroll();
+    }
+
+    return { init };
+})();
+
+
+// ============================================
 // DOM Ready & Initialization
 // ============================================
 
@@ -427,6 +514,12 @@ document.addEventListener('DOMContentLoaded', () => {
             toggle.setAttribute('aria-expanded', expanded);
         });
     }
+
+    // Initialize scroll animations
+    ScrollAnimations.init();
+
+    // Initialize navbar scroll effect
+    NavbarScroll.init();
 
     // Emit app ready event
     EventBus.emit('app:ready');

@@ -9,28 +9,33 @@
         /* Upload-specific styles */
         .upload-zone {
             border: 2px dashed var(--color-gray-300);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
             text-align: center;
             transition: all var(--transition-base);
             cursor: pointer;
             position: relative;
+            background: var(--color-gray-50);
         }
 
         .upload-zone:hover {
             border-color: var(--color-primary);
             background: var(--color-primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .upload-zone.dragover {
             border-color: var(--color-primary);
             background: var(--color-primary-light);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: var(--shadow-glow);
+            transform: scale(1.02);
         }
 
         .upload-zone.has-file {
             border-color: var(--color-success);
             background: var(--color-success-light);
+            border-style: solid;
         }
 
         .upload-zone-icon {
@@ -38,11 +43,13 @@
             height: 48px;
             margin: 0 auto var(--spacing-md);
             color: var(--color-gray-400);
+            transition: all var(--transition-base);
         }
 
         .upload-zone.dragover .upload-zone-icon,
         .upload-zone:hover .upload-zone-icon {
             color: var(--color-primary);
+            transform: translateY(-4px);
         }
 
         .upload-zone.has-file .upload-zone-icon {
@@ -79,7 +86,7 @@
 
         .file-info .file-name {
             font-size: var(--font-size-sm);
-            font-weight: 500;
+            font-weight: 600;
             color: var(--color-gray-700);
         }
 
@@ -89,8 +96,8 @@
             color: var(--color-danger);
             cursor: pointer;
             font-size: var(--font-size-sm);
-            padding: 2px var(--spacing-xs);
-            border-radius: var(--radius-sm);
+            padding: 4px var(--spacing-sm);
+            border-radius: var(--radius-full);
             transition: background var(--transition-fast);
         }
 
@@ -100,21 +107,26 @@
 
         .upload-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
             margin-bottom: var(--spacing-xl);
         }
 
         .upload-card {
             background: var(--color-white);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             border: 1px solid var(--color-gray-200);
-            padding: var(--spacing-lg);
+            padding: var(--spacing-xl);
+            transition: all var(--transition-base);
+        }
+
+        .upload-card:hover {
+            box-shadow: var(--shadow-md);
         }
 
         .upload-card-label {
             font-size: var(--font-size-sm);
-            font-weight: 600;
+            font-weight: 700;
             color: var(--color-gray-700);
             margin-bottom: var(--spacing-md);
             display: flex;
@@ -127,33 +139,41 @@
         }
 
         .results-section {
-            margin-top: var(--spacing-xl);
+            margin-top: var(--spacing-3xl);
         }
 
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-md);
+            gap: var(--spacing-lg);
         }
 
         .result-card {
             background: var(--color-white);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             border: 1px solid var(--color-gray-200);
-            padding: var(--spacing-lg);
+            padding: var(--spacing-xl);
             text-align: center;
+            transition: all var(--transition-base);
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .result-card .result-count {
-            font-size: var(--font-size-3xl);
-            font-weight: 700;
+            font-size: var(--font-size-4xl);
+            font-weight: 800;
             color: var(--color-gray-900);
             margin-bottom: var(--spacing-xs);
+            letter-spacing: -0.03em;
         }
 
         .result-card .result-label {
             font-size: var(--font-size-sm);
             color: var(--color-gray-500);
+            font-weight: 500;
         }
 
         .result-card.flagged .result-count {
@@ -164,11 +184,11 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
-            margin-top: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
         }
 
         .upload-progress {
-            margin-top: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
         }
 
         .upload-progress .progress-text {
@@ -218,7 +238,7 @@
         <main class="main-content">
             <div class="container">
                 <!-- Page Header -->
-                <div class="page-header">
+                <div class="page-header fade-in-up">
                     <h1>Upload CSV Data</h1>
                     <p class="subtitle">Import roles, people, and events data from CSV files to reconstruct organisational history.</p>
                 </div>
@@ -227,7 +247,7 @@
                 <form id="upload-form" aria-label="CSV file upload form">
                     <div class="upload-grid">
                         <!-- Roles CSV -->
-                        <div class="upload-card">
+                        <div class="upload-card fade-in-up">
                             <label class="upload-card-label" for="roles-file-input">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                     <rect x="2" y="7" width="20" height="14" rx="2"/>
@@ -255,7 +275,7 @@
                         </div>
 
                         <!-- People CSV -->
-                        <div class="upload-card">
+                        <div class="upload-card fade-in-up">
                             <label class="upload-card-label" for="people-file-input">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -283,7 +303,7 @@
                         </div>
 
                         <!-- Events CSV -->
-                        <div class="upload-card">
+                        <div class="upload-card fade-in-up">
                             <label class="upload-card-label" for="events-file-input">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10"/>
@@ -312,7 +332,7 @@
                     </div>
 
                     <!-- Upload Actions -->
-                    <div class="upload-actions">
+                    <div class="upload-actions fade-in-up">
                         <button type="submit" class="btn btn-primary btn-lg" id="upload-btn" disabled>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -362,7 +382,7 @@
         </main>
 
         <!-- Footer -->
-        <footer class="footer" style="text-align: center; padding: var(--spacing-xl); color: var(--color-gray-500); font-size: var(--font-size-sm); border-top: 1px solid var(--color-gray-200);">
+        <footer class="footer">
             <p>Weave &mdash; Reconstructing organisational change over time | Lab 2 - People-Centric Tech &amp; Collaboration</p>
         </footer>
     </div>
