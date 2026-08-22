@@ -110,14 +110,14 @@ This plan breaks the Weave application into parallelisable tasks aligned with th
     - Implement initial load (latest date or earliest date with data)
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 5. Role History and Person Journey Views (Member 3)
-  - [ ] 5.1 Implement role search and history API
+- [x] 5. Role History and Person Journey Views (Member 3)
+  - [x] 5.1 Implement role search and history API
     - Create `api/roles.php` with `?action=search&q={query}` for search by title or role_id
     - Implement `?action=history&role_id={id}` returning chronological timeline of changes (title changes, reporting-line shifts, redesignations)
     - Include occupants list ordered by assignment date
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 5.2 Implement person search and journey API
+  - [x] 5.2 Implement person search and journey API
     - Create `api/people.php` with `?action=search&q={query}` for search by name or person_id
     - Implement `?action=journey&person_id={id}` returning chronological timeline of transitions (promotions, transfers, department changes)
     - Include current role and department in response
@@ -128,14 +128,14 @@ This plan breaks the Weave application into parallelisable tasks aligned with th
     - **Property 6: Event detail completeness**
     - **Validates: Requirements 2.2, 2.3, 2.4, 2.5, 3.2, 3.3, 3.4**
 
-  - [ ] 5.4 Create role history frontend view
+  - [x] 5.4 Create role history frontend view
     - Create `pages/role-history.html` with search bar and timeline display area
     - Create `assets/js/role-history.js` with search autocomplete, fetch role history from API, render chronological timeline of changes
     - Display each change with previous value, new value, and effective date
     - Display list of occupants with links to person journey
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ] 5.5 Create person journey frontend view
+  - [x] 5.5 Create person journey frontend view
     - Create `pages/person-journey.html` with search bar and timeline display area
     - Create `assets/js/person-journey.js` with search autocomplete, fetch person journey from API, render chronological timeline
     - Display current role and department at the top
@@ -143,7 +143,7 @@ This plan breaks the Weave application into parallelisable tasks aligned with th
     - Display links to role history for each role held
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [ ] 5.6 Implement connections API and view
+  - [x] 5.6 Implement connections API and view
     - Create `api/connections.php` with `?type=role&id={id}` and `?type=person&id={id}` endpoints
     - Implement temporal correlation detection (events sharing same time window)
     - Create `assets/js/connection-view.js` with navigation links between role history and person journey
