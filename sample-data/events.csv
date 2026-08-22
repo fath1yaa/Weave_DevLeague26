@@ -1,0 +1,23 @@
+event_id,event_type,entity_type,entity_id,previous_value,new_value,effective_date,description
+E001,hire,person,P001,,Chief Executive Officer,2020-01-01,Sarah Chen appointed as CEO
+E002,hire,person,P002,,VP Engineering,2020-01-01,David Kumar joins as VP Engineering
+E003,hire,person,P003,,VP Marketing,2020-01-01,Emily Watson joins as VP Marketing
+E004,hire,person,P005,,VP Operations,2020-03-15,Lisa Park hired as VP Operations
+E005,hire,person,P006,,Engineering Manager,2020-01-01,Michael Thompson joins as Engineering Manager
+E006,hire,person,P008,,Senior Software Engineer,2020-02-01,Robert Nguyen hired as Senior Software Engineer
+E007,promotion,person,P007,Software Engineer,Engineering Manager,2023-01-01,Anna Kowalski promoted to Engineering Manager
+E008,departure,person,P006,Engineering Manager,,2022-12-31,Michael Thompson departs the Engineering Manager role
+E009,title_change,role,R008,Marketing Manager,Digital Marketing Lead,2023-07-01,Marketing Manager role redesignated to Digital Marketing Lead
+E010,department_change,person,P010,Marketing,Marketing,2023-07-01,Thomas Anderson continues under restructured marketing team
+E011,restructure,role,R003,,Digital-first marketing strategy,2023-07-01,Marketing department restructured around digital channels
+E012,reporting_change,role,R009,R008,R003,2023-07-01,Digital Marketing Lead now reports directly to VP Marketing
+E013,hire,person,P009,,Senior Software Engineer,2022-07-01,Jessica Liu joins as Senior Software Engineer
+E014,departure,person,P008,Senior Software Engineer,,2022-06-30,Robert Nguyen departs the organisation
+E015,hire,person,P011,,Financial Analyst,2020-06-01,Maria Garcia hired as Financial Analyst
+E016,departure,person,P011,Financial Analyst,,2023-03-31,Maria Garcia departs the organisation
+E017,hire,person,P012,,Financial Analyst,2023-04-01,Kevin O'Brien hired as Financial Analyst
+E018,promotion,person,P009,Junior Engineer,Senior Software Engineer,2022-07-01,Jessica Liu promoted upon joining
+E019,reporting_change,role,R006,R002,R002,2021-06-01,Engineering Manager reporting line confirmed after reorg
+E020,hire,person,P004,,VP Finance,2020-01-01,James Rodriguez appointed as VP Finance
+E100,promotion,person,P200,Analyst,Senior Analyst,2023-01-15,Promotion for non-existent person
+E101,hire,person,P013,,Operations Assistant,,New hire with missing effective date

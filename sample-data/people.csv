@@ -1,0 +1,16 @@
+person_id,name,role_id,start_date,end_date
+P001,Sarah Chen,R001,2020-01-01,
+P002,David Kumar,R002,2020-01-01,
+P003,Emily Watson,R003,2020-01-01,
+P004,James Rodriguez,R004,2020-01-01,
+P005,Lisa Park,R005,2020-03-15,
+P006,Michael Thompson,R006,2020-01-01,2022-12-31
+P007,Anna Kowalski,R006,2023-01-01,
+P008,Robert Nguyen,R007,2020-02-01,2022-06-30
+P009,Jessica Liu,R007,2022-07-01,
+P010,Thomas Anderson,R008,2020-01-01,2023-06-30
+P010,Thomas Anderson,R009,2023-07-01,
+P011,Maria Garcia,R010,2020-06-01,2023-03-31
+P012,Kevin O'Brien,R010,2023-04-01,
+P099,John Doe,,2021-05-01,
+P013,Ghost Employee,R999,2022-01-01,

@@ -1,0 +1,13 @@
+role_id,title,department,reports_to,effective_from,effective_to
+R001,Chief Executive Officer,Executive,,2020-01-01,
+R002,VP Engineering,Engineering,R001,2020-01-01,
+R003,VP Marketing,Marketing,R001,2020-01-01,
+R004,VP Finance,Finance,R001,2020-01-01,
+R005,VP Operations,Operations,R001,2020-03-15,
+R006,Engineering Manager,Engineering,R002,2020-01-01,
+R007,Senior Software Engineer,Engineering,R006,2020-02-01,
+R008,Marketing Manager,Marketing,R003,2020-01-01,2023-06-30
+R009,Digital Marketing Lead,Marketing,R003,2023-07-01,
+R010,Financial Analyst,Finance,R004,2020-06-01,
+R050,,Operations,R005,2021-01-01,
+R051,Temp Role,Finance,R004,2023-12-01,2023-01-01
