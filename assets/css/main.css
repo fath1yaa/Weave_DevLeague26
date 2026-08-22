@@ -512,6 +512,18 @@ p {
 .steps-section {
     padding: var(--spacing-5xl) 0;
     background: var(--color-gray-50);
+    position: relative;
+}
+
+.steps-section::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent 0%, var(--color-gray-50) 100%);
+    pointer-events: none;
 }
 
 .steps-grid {
@@ -898,11 +910,23 @@ tr:hover td {
 .footer {
     text-align: center;
     padding: var(--spacing-3xl) var(--spacing-xl);
-    margin-top: var(--spacing-3xl);
-    background: var(--color-gray-50);
-    border-top: 1px solid var(--color-gray-200);
+    margin-top: 0;
+    background: var(--color-gray-100);
+    border-top: none;
     color: var(--color-gray-500);
     font-size: var(--font-size-sm);
+    position: relative;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent 0%, var(--color-gray-100) 100%);
+    pointer-events: none;
 }
 
 /* --- Responsive --- */
