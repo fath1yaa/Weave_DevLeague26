@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Journey - Weave</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/person-journey.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation Bar -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="container">
+                <a href="../index.html" class="navbar-brand">
+                    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 20 C12 12, 20 12, 22 20" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M8 16 C12 8, 20 8, 24 16" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                    </svg>
+                    Weave
+                </a>
+
+                <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+
+                <ul class="navbar-nav">
+                    <li><a href="../index.html">Dashboard</a></li>
+                    <li><a href="upload.html">Upload</a></li>
+                    <li><a href="orgchart.html">Org Chart</a></li>
+                    <li><a href="role-history.html">Roles</a></li>
+                    <li><a href="person-journey.html" class="active">People</a></li>
+                    <li><a href="data-quality.html">Data Quality</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1>Person Journey</h1>
+                    <p class="subtitle">Search for a person and follow their career path through the organisation.</p>
+                </div>
+
+                <!-- Search Section -->
+                <section class="search-section" aria-label="Person search">
+                    <div class="search-wrapper">
+                        <label for="person-search" class="sr-only">Search people by name or ID</label>
+                        <input 
+                            type="text" 
+                            id="person-search" 
+                            class="form-input search-input" 
+                            placeholder="Search by name or person ID..."
+                            autocomplete="off"
+                            aria-describedby="search-help"
+                        >
+                        <span id="search-help" class="text-sm text-muted mt-sm" style="display:block;">
+                            Type at least 1 character to search
+                        </span>
+                        <!-- Autocomplete dropdown -->
+                        <div id="search-results" class="search-dropdown hidden" role="listbox" aria-label="Search results"></div>
+                    </div>
+                </section>
+
+                <!-- Person Detail Section (hidden until a person is selected) -->
+                <section id="person-detail" class="person-detail hidden" aria-label="Person details">
+                    <!-- Person Header Card -->
+                    <div class="card person-header-card">
+                        <div class="person-header-content">
+                            <div class="person-avatar" id="person-avatar" aria-hidden="true"></div>
+                            <div class="person-title-block">
+                                <h2 id="person-name"></h2>
+                                <div class="person-meta">
+                                    <span class="badge badge-primary" id="person-id-badge"></span>
+                                </div>
+                                <div class="person-current-role" id="person-current-role">
+                                    <!-- Filled dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="person-actions">
+                            <button class="btn btn-secondary btn-sm" id="btn-view-connections" aria-label="View connections for this person">
+                                View Connections
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Journey Content -->
+                    <div class="person-content-grid">
+                        <!-- Career Path (role assignments) -->
+                        <div class="card">
+                            <h3 class="card-section-title">Career Path</h3>
+                            <div id="career-path" class="career-path">
+                                <div class="empty-state">
+                                    <p>No role assignments found.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Events Timeline -->
+                        <div class="card">
+                            <h3 class="card-section-title">Transition Timeline</h3>
+                            <div id="events-timeline" class="timeline">
+                                <div class="empty-state">
+                                    <p>No transition events recorded.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="loading-overlay hidden">
+                    <div class="spinner"></div>
+                    <span>Loading person journey...</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/person-journey.js"></script>
+</body>
+</html>

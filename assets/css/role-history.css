@@ -1,0 +1,294 @@
+/* ===================================
+   Role History Page Styles
+   =================================== */
+
+/* --- Search Section --- */
+.search-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.search-wrapper {
+    position: relative;
+    max-width: 600px;
+}
+
+.search-input {
+    padding-left: var(--spacing-lg);
+    font-size: var(--font-size-lg);
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+.search-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-gray-100);
+    transition: background var(--transition-fast);
+}
+
+.search-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.search-dropdown-item:hover,
+.search-dropdown-item:focus {
+    background: var(--color-primary-light);
+}
+
+.search-dropdown-item .item-title {
+    font-weight: 500;
+    color: var(--color-gray-800);
+}
+
+.search-dropdown-item .item-meta {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+}
+
+.search-dropdown-item .item-occupant {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-400);
+}
+
+/* --- Role Detail Section --- */
+.role-detail {
+    animation: fadeIn var(--transition-base) ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.role-header-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xl);
+}
+
+.role-title-block h2 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.role-meta {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.role-info-grid {
+    display: flex;
+    gap: var(--spacing-2xl);
+    flex-wrap: wrap;
+}
+
+.role-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.role-info-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+    letter-spacing: 0.05em;
+}
+
+.role-info-value {
+    font-size: var(--font-size-base);
+    color: var(--color-gray-800);
+    font-weight: 500;
+}
+
+.role-info-value a {
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+.role-info-value a:hover {
+    text-decoration: underline;
+}
+
+.role-actions {
+    flex-shrink: 0;
+}
+
+/* --- Content Grid --- */
+.role-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-xl);
+}
+
+@media (max-width: 900px) {
+    .role-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-header-card {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+}
+
+.card-section-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+/* --- Timeline --- */
+.timeline {
+    position: relative;
+    padding-left: var(--spacing-xl);
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-gray-200);
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: var(--spacing-xl);
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: calc(-1 * var(--spacing-xl) + 2px);
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-white);
+    border: 3px solid var(--color-primary);
+}
+
+.timeline-dot.title_change { border-color: var(--color-info); }
+.timeline-dot.reporting_change { border-color: var(--color-secondary); }
+.timeline-dot.restructure { border-color: var(--color-warning); }
+.timeline-dot.hire { border-color: var(--color-success); }
+.timeline-dot.departure { border-color: var(--color-danger); }
+
+.timeline-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.timeline-event-type {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-gray-700);
+    text-transform: capitalize;
+    margin-bottom: var(--spacing-xs);
+}
+
+.timeline-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-sm);
+}
+
+.timeline-change {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+.timeline-change .prev-value {
+    padding: 2px var(--spacing-sm);
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+    border-radius: var(--radius-sm);
+    text-decoration: line-through;
+}
+
+.timeline-change .arrow {
+    color: var(--color-gray-400);
+}
+
+.timeline-change .new-value {
+    padding: 2px var(--spacing-sm);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-sm);
+}
+
+/* --- Occupants List --- */
+.occupants-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.occupant-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-gray-200);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.occupant-item:hover {
+    background: var(--color-gray-50);
+    border-color: var(--color-primary-light);
+}
+
+.occupant-item.current {
+    border-color: var(--color-success);
+    background: var(--color-success-light);
+}
+
+.occupant-name {
+    font-weight: 500;
+    color: var(--color-gray-800);
+}
+
+.occupant-dates {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+.occupant-badge {
+    font-size: var(--font-size-xs);
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--radius-full);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    font-weight: 500;
+}

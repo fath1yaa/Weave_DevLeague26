@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role History - Weave</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/role-history.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation Bar -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="container">
+                <a href="../index.html" class="navbar-brand">
+                    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 20 C12 12, 20 12, 22 20" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M8 16 C12 8, 20 8, 24 16" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                    </svg>
+                    Weave
+                </a>
+
+                <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+
+                <ul class="navbar-nav">
+                    <li><a href="../index.html">Dashboard</a></li>
+                    <li><a href="upload.html">Upload</a></li>
+                    <li><a href="orgchart.html">Org Chart</a></li>
+                    <li><a href="role-history.html" class="active">Roles</a></li>
+                    <li><a href="person-journey.html">People</a></li>
+                    <li><a href="data-quality.html">Data Quality</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1>Role History</h1>
+                    <p class="subtitle">Search for a role and explore how it has evolved over time.</p>
+                </div>
+
+                <!-- Search Section -->
+                <section class="search-section" aria-label="Role search">
+                    <div class="search-wrapper">
+                        <label for="role-search" class="sr-only">Search roles by title or ID</label>
+                        <input 
+                            type="text" 
+                            id="role-search" 
+                            class="form-input search-input" 
+                            placeholder="Search by role title or ID..."
+                            autocomplete="off"
+                            aria-describedby="search-help"
+                        >
+                        <span id="search-help" class="text-sm text-muted mt-sm" style="display:block;">
+                            Type at least 1 character to search
+                        </span>
+                        <!-- Autocomplete dropdown -->
+                        <div id="search-results" class="search-dropdown hidden" role="listbox" aria-label="Search results"></div>
+                    </div>
+                </section>
+
+                <!-- Role Detail Section (hidden until a role is selected) -->
+                <section id="role-detail" class="role-detail hidden" aria-label="Role details">
+                    <!-- Role Header Card -->
+                    <div class="card role-header-card">
+                        <div class="role-header-content">
+                            <div class="role-title-block">
+                                <h2 id="role-title"></h2>
+                                <div class="role-meta">
+                                    <span class="badge badge-primary" id="role-id-badge"></span>
+                                    <span class="badge badge-info" id="role-department-badge"></span>
+                                </div>
+                            </div>
+                            <div class="role-info-grid">
+                                <div class="role-info-item">
+                                    <span class="role-info-label">Reports To</span>
+                                    <span class="role-info-value" id="role-reports-to">—</span>
+                                </div>
+                                <div class="role-info-item">
+                                    <span class="role-info-label">Effective From</span>
+                                    <span class="role-info-value" id="role-effective-from">—</span>
+                                </div>
+                                <div class="role-info-item">
+                                    <span class="role-info-label">Effective To</span>
+                                    <span class="role-info-value" id="role-effective-to">—</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="role-actions">
+                            <button class="btn btn-secondary btn-sm" id="btn-view-connections" aria-label="View connections for this role">
+                                View Connections
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timeline and Occupants -->
+                    <div class="role-content-grid">
+                        <!-- Events Timeline -->
+                        <div class="card">
+                            <h3 class="card-section-title">Change Timeline</h3>
+                            <div id="events-timeline" class="timeline">
+                                <div class="empty-state">
+                                    <p>No change events recorded for this role.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Occupants List -->
+                        <div class="card">
+                            <h3 class="card-section-title">Occupants</h3>
+                            <div id="occupants-list" class="occupants-list">
+                                <div class="empty-state">
+                                    <p>No occupant records found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="loading-overlay hidden">
+                    <div class="spinner"></div>
+                    <span>Loading role history...</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/role-history.js"></script>
+</body>
+</html>
