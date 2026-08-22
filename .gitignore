@@ -1,0 +1,23 @@
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# PHP
+*.log
+error_log
+
+# Data files (uploaded/runtime data - keep structure but not content)
+data/*.json
+!data/.htaccess
+
+# Temporary files
+*.tmp
+*.bak
+~$*

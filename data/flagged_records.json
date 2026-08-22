@@ -143,5 +143,52 @@
         "resolved_at": null,
         "created_at": "2026-08-22 06:29:43",
         "id": 9
+    },
+    {
+        "source_file": "people.csv",
+        "row_number": 15,
+        "issue_type": "missing_field",
+        "issue_description": "Row 15: Missing required field 'role_id'",
+        "original_data": {
+            "person_id": "P099",
+            "name": "John Doe",
+            "role_id": "",
+            "start_date": "2021-05-01",
+            "end_date": ""
+        },
+        "resolved": false,
+        "resolved_at": null,
+        "created_at": "2026-08-22 07:26:29",
+        "id": 10
+    },
+    {
+        "source_file": "people.csv",
+        "row_number": 0,
+        "issue_type": "unmatched_reference",
+        "issue_description": "role_id 'R999' not found in roles",
+        "original_data": {
+            "person_id": "P013",
+            "name": "Ghost Employee",
+            "role_id": "R999"
+        },
+        "resolved": false,
+        "resolved_at": null,
+        "created_at": "2026-08-22 07:26:29",
+        "id": 11
+    },
+    {
+        "source_file": "events.csv",
+        "row_number": 0,
+        "issue_type": "unmatched_reference",
+        "issue_description": "entity_id 'P200' not found in people",
+        "original_data": {
+            "event_id": "E100",
+            "entity_type": "person",
+            "entity_id": "P200"
+        },
+        "resolved": false,
+        "resolved_at": null,
+        "created_at": "2026-08-22 07:26:29",
+        "id": 12
     }
 ]

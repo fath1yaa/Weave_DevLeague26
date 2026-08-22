@@ -121,6 +121,34 @@ foreach ($fileFields as $field) {
             $summary = processEventsFile($parseResult['rows'], $summary, $fileType);
             break;
     }
+
+    // Log to upload history
+    $importedCount = 0;
+    $flaggedCount = 0;
+    switch ($fileType) {
+        case 'roles':
+            $importedCount = $summary['roles_imported'];
+            break;
+        case 'people':
+            $importedCount = $summary['people_imported'];
+            break;
+        case 'events':
+            $importedCount = $summary['events_imported'];
+            break;
+    }
+
+    $historyRecord = [
+        'id'               => storeNextId('upload_history'),
+        'file_type'        => $fileType,
+        'file_name'        => $file['name'],
+        'records_imported' => $importedCount,
+        'records_flagged'  => $summary['flagged'],
+        'uploaded_at'      => date('Y-m-d\TH:i:s')
+    ];
+
+    $history = storeRead('upload_history');
+    $history[] = $historyRecord;
+    storeWrite('upload_history', $history);
 }
 
 // Perform cross-file reference matching after all files are processed
