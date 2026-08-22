@@ -24,6 +24,7 @@ const RoleHistory = (() => {
         cacheElements();
         bindEvents();
         checkUrlParams();
+        loadDepartments();
     }
 
     /**
@@ -325,6 +326,80 @@ const RoleHistory = (() => {
     function loadRole(roleId) {
         searchInput.value = '';
         loadRoleHistory(roleId);
+    }
+
+    /**
+     * Load and display departments from the API
+     */
+    async function loadDepartments() {
+        const grid = document.getElementById('departments-grid');
+        if (!grid) return;
+
+        try {
+            const data = await API.get('roles.php?action=departments');
+            if (data.success && data.departments.length > 0) {
+                renderDepartments(grid, data.departments);
+            } else {
+                grid.innerHTML = `
+                    <div class="departments-empty">
+                        <p class="text-muted">No departments found. Upload a roles CSV to see departments here.</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Failed to load departments:', error);
+            grid.innerHTML = `
+                <div class="departments-empty">
+                    <p class="text-muted">No departments found. Upload a roles CSV to see departments here.</p>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Render department cards
+     */
+    function renderDepartments(container, departments) {
+        const colors = ['primary', 'secondary', 'success', 'warning', 'info'];
+
+        container.innerHTML = departments.map((dept, i) => {
+            const color = colors[i % colors.length];
+            const initial = dept.name.charAt(0).toUpperCase();
+            const roleCount = dept.role_count;
+            const rolePreview = dept.roles.slice(0, 3);
+
+            return `
+                <div class="department-card" 
+                     tabindex="0" 
+                     role="button"
+                     data-department="${escapeHtml(dept.name)}"
+                     aria-label="${escapeHtml(dept.name)} department with ${roleCount} roles">
+                    <div class="department-card-icon" style="background: var(--color-${color}-light); color: var(--color-${color});">
+                        ${initial}
+                    </div>
+                    <div class="department-card-name">${escapeHtml(dept.name)}</div>
+                    <div class="department-card-count">${roleCount} role${roleCount !== 1 ? 's' : ''}</div>
+                    <div class="department-card-roles">
+                        ${rolePreview.map(r => `<span class="role-tag">${escapeHtml(r.title)}</span>`).join('')}
+                        ${dept.roles.length > 3 ? `<span class="role-tag">+${dept.roles.length - 3} more</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Bind click events - clicking a department searches for it
+        container.querySelectorAll('.department-card').forEach(card => {
+            const handler = () => {
+                const deptName = card.dataset.department;
+                searchInput.value = deptName;
+                handleSearch();
+                searchInput.focus();
+            };
+            card.addEventListener('click', handler);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handler();
+            });
+        });
     }
 
     return { init, loadRole, loadRoleHistory };

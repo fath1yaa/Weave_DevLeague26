@@ -29,8 +29,11 @@ switch ($action) {
     case 'detail':
         handleDetail();
         break;
+    case 'departments':
+        handleDepartments();
+        break;
     default:
-        errorResponse('Invalid action. Use: search, history, or detail', 400);
+        errorResponse('Invalid action. Use: search, history, detail, or departments', 400);
 }
 
 /**
@@ -253,5 +256,43 @@ function handleDetail() {
         'role'             => $role,
         'current_occupant' => $currentOccupant ?: null,
         'reports_to_title' => $reportingTitle
+    ]);
+}
+
+/**
+ * Get all unique departments from roles data
+ * GET ?action=departments
+ */
+function handleDepartments() {
+    $roles = storeRead('roles');
+
+    // Collect unique departments with role counts
+    $departments = [];
+    foreach ($roles as $role) {
+        $dept = $role['department'];
+        if (!empty($dept)) {
+            if (!isset($departments[$dept])) {
+                $departments[$dept] = [
+                    'name'       => $dept,
+                    'role_count' => 0,
+                    'roles'      => []
+                ];
+            }
+            $departments[$dept]['role_count']++;
+            $departments[$dept]['roles'][] = [
+                'role_id' => $role['role_id'],
+                'title'   => $role['title']
+            ];
+        }
+    }
+
+    // Sort by department name
+    ksort($departments);
+    $result = array_values($departments);
+
+    jsonResponse([
+        'success'     => true,
+        'count'       => count($result),
+        'departments' => $result
     ]);
 }
