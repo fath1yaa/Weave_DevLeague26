@@ -6,9 +6,11 @@
 .search-section {
     margin-bottom: var(--spacing-2xl);
     position: relative;
-    /* Keep the search + its dropdown above the People directory grid,
-       which creates its own stacking context via the fade-in-up transform. */
-    z-index: 100;
+    /* Keep the search + its dropdown above the People directory grid
+       (which makes its own stacking context via the fade-in-up transform),
+       but below the sticky navbar (z-index: 100) so it doesn't overlap it
+       while scrolling. */
+    z-index: 10;
 }
 
 .search-wrapper {
@@ -34,7 +36,7 @@
     box-shadow: var(--shadow-lg);
     max-height: 320px;
     overflow-y: auto;
-    z-index: 100;
+    z-index: 20;
 }
 
 .search-dropdown-item {
