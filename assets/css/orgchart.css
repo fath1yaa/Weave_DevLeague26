@@ -1,0 +1,299 @@
+/* ===================================
+   Weave - Org Chart Styles
+   Depends on the custom properties defined in main.css
+   =================================== */
+
+.orgchart {
+    position: relative;
+    width: 100%;
+    padding: var(--spacing-lg);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+}
+
+/* --- Scrollable tree canvas --- */
+.orgchart-canvas {
+    display: flex;
+    justify-content: center;
+    min-width: min-content;
+    padding: var(--spacing-md) var(--spacing-sm);
+}
+
+/* When there are multiple roots, stack the root trees. */
+.orgchart-roots {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--spacing-2xl);
+    min-width: min-content;
+}
+
+/* --- Tree layout (flexbox nested lists) --- */
+.orgchart-tree,
+.orgchart-tree ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.orgchart-tree {
+    align-items: flex-start;
+}
+
+.orgchart-node {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-sm) 0;
+}
+
+/* --- Connectors between a parent and its children --- */
+/* Vertical line down from a parent that has children. */
+.orgchart-node.has-children > .orgchart-card::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 2px;
+    height: var(--spacing-xl);
+    background-color: var(--color-gray-300);
+    transform: translateX(-50%);
+}
+
+/* Vertical line up into each child. */
+.orgchart-node::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: var(--spacing-xl);
+    background-color: var(--color-gray-300);
+    transform: translateX(-50%);
+}
+
+/* Horizontal connector across sibling children. */
+.orgchart-node::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 2px;
+    background-color: var(--color-gray-300);
+}
+
+.orgchart-node:last-child::after {
+    left: 50%;
+}
+
+/* An only child needs no horizontal segment. */
+.orgchart-node:only-child::after {
+    display: none;
+}
+
+.orgchart-node:first-child:last-child::before,
+.orgchart-node:only-child::before {
+    /* single child keeps its vertical line */
+}
+
+/* Root-level nodes have no incoming connectors. */
+.orgchart-node.is-root::before,
+.orgchart-node.is-root::after {
+    display: none;
+}
+
+/* --- Node card --- */
+.orgchart-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 200px;
+    padding: var(--spacing-md);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-top: 3px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.orgchart-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Vacant roles get a muted, dashed treatment. */
+.orgchart-card.is-vacant {
+    border-top-color: var(--color-gray-400);
+    background-color: var(--color-gray-50);
+}
+
+/* --- Card content --- */
+.orgchart-role {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-gray-900);
+    cursor: pointer;
+    text-align: center;
+}
+
+.orgchart-role:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.orgchart-role:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.orgchart-occupant {
+    display: inline-block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-600);
+    cursor: pointer;
+    text-align: center;
+}
+
+.orgchart-occupant.is-linked:hover {
+    color: var(--color-secondary);
+    text-decoration: underline;
+}
+
+.orgchart-occupant.is-linked:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.orgchart-occupant.is-vacant {
+    font-style: italic;
+    color: var(--color-gray-400);
+    cursor: default;
+}
+
+.orgchart-department {
+    display: inline-block;
+    align-self: center;
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.orgchart-reports-to {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+/* --- Empty / loading states --- */
+.orgchart-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    padding: var(--spacing-xl);
+    color: var(--color-gray-500);
+    font-size: var(--font-size-base);
+    text-align: center;
+}
+
+.orgchart.is-loading {
+    opacity: 0.6;
+}
+
+/* --- Transition animations (Req 5.4) --- */
+@keyframes orgchart-node-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes orgchart-node-exit {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+}
+
+/* Nodes present in the new state animate in. */
+.orgchart-node.is-entering > .orgchart-card {
+    animation: orgchart-node-enter var(--transition-base) ease both;
+}
+
+/* Nodes leaving the tree animate out before removal. */
+.orgchart-node.is-exiting > .orgchart-card {
+    animation: orgchart-node-exit var(--transition-base) ease both;
+    pointer-events: none;
+}
+
+/* Nodes that persist glide to their new position. */
+.orgchart-canvas.is-repositioning .orgchart-card {
+    transition: transform var(--transition-base) ease,
+                box-shadow var(--transition-fast);
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    .orgchart {
+        padding: var(--spacing-md);
+    }
+
+    .orgchart-card {
+        width: 160px;
+    }
+
+    .orgchart-roots {
+        gap: var(--spacing-lg);
+    }
+}
+
+/* Respect reduced-motion preferences (Req 5.4). */
+@media (prefers-reduced-motion: reduce) {
+    .orgchart-node.is-entering > .orgchart-card,
+    .orgchart-node.is-exiting > .orgchart-card {
+        animation: none;
+    }
+
+    .orgchart-canvas.is-repositioning .orgchart-card {
+        transition: none;
+    }
+
+    .orgchart-card {
+        transition: none;
+    }
+}

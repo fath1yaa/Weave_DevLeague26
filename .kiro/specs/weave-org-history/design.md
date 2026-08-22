@@ -1,10 +1,10 @@
 # Design Document
 
-## Introduction
+## Overview
 
 This document describes the architecture and design for the Weave application - a full-stack web application that reconstructs and visualises organisational change over time. Weave is built with HTML/CSS/JavaScript on the frontend, PHP for backend logic, and MySQL (via XAMPP) for data storage. The system ingests structured CSV data describing roles, people, and organisational events, then presents connected historical views through an animated timeline slider and org chart visualisation.
 
-## Architecture Overview
+## Architecture
 
 Weave follows a traditional three-tier web architecture optimised for a hackathon team of 4 working concurrently:
 
@@ -71,7 +71,7 @@ weave/
     └── migrations/               # Schema version changes
 ```
 
-## Components
+## Components and Interfaces
 
 ### 1. CSV Ingestion Module
 
@@ -162,9 +162,9 @@ Interface for reviewing and resolving data issues.
 - Re-validate on submission and update database
 - Calculate and display data quality score
 
-## Interfaces
+### Interfaces
 
-### API Endpoints
+#### API Endpoints
 
 #### POST /api/upload.php
 
@@ -683,3 +683,34 @@ function calculateQualityScore() {
 *For any* dataset with T total records in the database and F unresolved flagged records, the data quality score SHALL equal ((T - F) / T) * 100, rounded to one decimal place.
 
 **Validates: Requirements 6.6**
+
+## Testing Strategy
+
+Testing is organised around the correctness properties above and the three architectural tiers. Given the hackathon timebox, the strategy favours fast, high-signal checks over exhaustive coverage.
+
+### Unit Testing
+
+- **CSV parser and validator** (`api/includes/csv-parser.php`, `api/includes/validator.php`): Test header validation (Property 2), type checking, required-field detection, and correct classification of valid vs. flagged rows (Property 3). Use small fixture CSVs covering clean data, missing headers, missing required fields, and malformed dates.
+- **Temporal query engine** (`api/includes/helpers.php`, query builders): Test `getOrgStateAtDate` boundary conditions (Property 9) - dates equal to `effective_from`/`effective_to`, open-ended (`NULL`) end dates, and dates outside the data range.
+- **Quality score calculation**: Test the formula `((T - F) / T) * 100` including the zero-records edge case returning 100.0 (Property 13).
+- **Correlation detection**: Test the time-window logic for overlapping structural and person events (Property 8).
+
+### Integration Testing
+
+- **Upload pipeline**: POST fixture CSVs to `api/upload.php` against a test database and assert the import summary counts (imported + flagged = total rows), cross-file reference flagging (Property 4), and correct persistence into `roles`, `people`, `events`, and `role_assignments`.
+- **Query endpoints**: Seed the test database (via `database/seed.sql`) and assert JSON contracts for `roles.php`, `people.php`, `orgchart.php`, and `connections.php`, including chronological ordering of timelines (Property 5) and event-detail completeness (Property 6).
+- **Data quality resolution**: Submit resolutions to `api/dataquality.php` and confirm re-validation gates the database update (Property 12) - valid resolutions persist and clear the flag, invalid ones remain flagged.
+
+Integration tests run against a dedicated test schema that is reset from `schema.sql` and `seed.sql` before each run so results stay deterministic.
+
+### Manual and Exploratory Testing
+
+- **Timeline slider and org chart**: Manually verify drag/click date selection, play/pause animation, and that node transitions (appear, disappear, move) render correctly as the date changes. Confirm node detail completeness - title, occupant or "Vacant", and reporting line (Property 10).
+- **Connection navigation**: Click through role-history to person-journey links (and back) to confirm link counts match distinct occupants/roles (Property 7) and temporal context is preserved.
+- **Data quality page**: Verify flagged records appear under exactly one correct category (Property 11), inline editing works, and the quality score updates after resolutions.
+- **Error handling**: Exercise the error tables above - upload with no file, wrong file type, oversized file, missing headers; query with invalid dates and unknown entity IDs - and confirm the expected status codes and user-facing messages.
+
+### Cross-Browser and Data Checks
+
+- Smoke-test the UI in at least two modern browsers (Chrome and Firefox) to catch layout or Canvas/CSS rendering differences in the org chart and timeline.
+- Validate against a realistic dataset (dozens of roles, ~100+ people, ~200 events) to surface performance issues in temporal reconstruction and org tree rendering before the demo.

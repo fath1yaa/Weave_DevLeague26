@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org Chart - Weave</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/timeline.css">
+    <link rel="stylesheet" href="../assets/css/orgchart.css">
+    <style>
+        /* Page-specific layout for the org chart explorer */
+        .orgchart-page-timeline {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .orgchart-viewport {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            min-height: 320px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation Bar -->
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="container">
+                <a href="../index.html" class="navbar-brand">
+                    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 20 C12 12, 20 12, 22 20" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M8 16 C12 8, 20 8, 24 16" stroke="currentColor" stroke-width="2" fill="none" opacity="0.5"/>
+                    </svg>
+                    Weave
+                </a>
+
+                <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+
+                <ul class="navbar-nav">
+                    <li><a href="../index.html">Dashboard</a></li>
+                    <li><a href="upload.html">Upload</a></li>
+                    <li><a href="orgchart.html" class="active">Org Chart</a></li>
+                    <li><a href="role-history.html">Roles</a></li>
+                    <li><a href="person-journey.html">People</a></li>
+                    <li><a href="data-quality.html">Data Quality</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1>Org Chart Timeline</h1>
+                    <p class="subtitle">Explore the organisational structure at any point in time. Drag the slider to a date, or press play to animate through history.</p>
+                </div>
+
+                <!-- Timeline Slider -->
+                <section class="orgchart-page-timeline" aria-label="Timeline controls">
+                    <div id="timeline"></div>
+                </section>
+
+                <!-- Org Chart Viewport -->
+                <section aria-label="Organisational chart">
+                    <div class="orgchart-viewport">
+                        <div id="orgchart"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer" style="text-align: center; padding: var(--spacing-xl); color: var(--color-gray-500); font-size: var(--font-size-sm); border-top: 1px solid var(--color-gray-200);">
+            <p>Weave &mdash; Reconstructing organisational change over time | Lab 2 - People-Centric Tech &amp; Collaboration</p>
+        </footer>
+    </div>
+
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/timeline-slider.js"></script>
+    <script src="../assets/js/orgchart.js"></script>
+    <script>
+        'use strict';
+
+        /**
+         * Org chart page wiring (task 4.6).
+         *
+         * Connects the timeline slider to the org chart:
+         * - Creates the OrgChart on its container.
+         * - Creates the TimelineSlider on its container.
+         * - Listens for the slider's bubbling `datechange` event BEFORE calling
+         *   init(), so the slider's initial emit (defaulting to the latest date)
+         *   drives the first chart render.
+         * - On each datechange, fetches the org state for the new date and
+         *   re-renders the chart with its transition animation.
+         *
+         * Requirements: 5.1, 5.2, 5.3, 5.4
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const timelineEl = document.getElementById('timeline');
+            const orgchartEl = document.getElementById('orgchart');
+
+            if (!timelineEl || !orgchartEl) {
+                console.error('[orgchart page] Missing timeline or orgchart container');
+                return;
+            }
+
+            // The org chart renders the org state for a given date and animates
+            // transitions between states (Req 5.2, 5.4).
+            const orgChart = new OrgChart(orgchartEl, { animate: true });
+
+            // The timeline slider provides manual date selection plus play/pause
+            // and speed control (Req 5.1, 5.3). It derives its range from the
+            // org chart API and defaults the current date to the latest date.
+            const slider = new TimelineSlider(timelineEl, { speed: 'medium' });
+
+            // Wire datechange -> chart update. Registering this listener BEFORE
+            // slider.init() ensures the initial emit (latest date) renders the
+            // first chart state.
+            timelineEl.addEventListener('datechange', (e) => {
+                const date = e && e.detail ? e.detail.date : null;
+                if (date) {
+                    orgChart.update(date);
+                }
+            });
+
+            // Kick off: fetches the date range, sets the initial date to the
+            // latest with data, and emits the first datechange. Handles the
+            // no-data case gracefully (the slider shows an empty message and no
+            // datechange fires, so the chart keeps its default empty state).
+            slider.init().catch((error) => {
+                console.error('[orgchart page] Timeline initialisation failed:', error);
+                if (typeof Toast !== 'undefined' && Toast.error) {
+                    Toast.error('Could not initialise the timeline');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

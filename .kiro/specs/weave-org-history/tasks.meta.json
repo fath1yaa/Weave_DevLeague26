@@ -1,5 +1,14 @@
 {
-  "pbtResults": {},
+  "pbtResults": {
+    "4.2 Write property test for org chart temporal correctness": {
+      "status": "passed",
+      "lastRunTimestamp": 1787369129458
+    },
+    "4.5 Write property test for org chart node information": {
+      "status": "passed",
+      "lastRunTimestamp": 1787369716477
+    }
+  },
   "executionHistory": {
     "1.1 Create MySQL database schema": [
       {
@@ -114,6 +123,16 @@
         "executionId": "79e576f8-3019-4b7e-830a-b5dfe311fdb8",
         "chatSessionId": "sess_a4a9a10f-0eac-4b0c-8991-7110bdbb4973",
         "timestamp": 1787366731738
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787368669290
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787368851464
       }
     ],
     "4.3 Create timeline slider component": [
@@ -121,6 +140,16 @@
         "executionId": "79e576f8-3019-4b7e-830a-b5dfe311fdb8",
         "chatSessionId": "sess_a4a9a10f-0eac-4b0c-8991-7110bdbb4973",
         "timestamp": 1787366731801
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787368868782
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369187201
       }
     ],
     "4.4 Create org chart renderer": [
@@ -128,6 +157,16 @@
         "executionId": "79e576f8-3019-4b7e-830a-b5dfe311fdb8",
         "chatSessionId": "sess_a4a9a10f-0eac-4b0c-8991-7110bdbb4973",
         "timestamp": 1787366731911
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369194516
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369426288
       }
     ],
     "4.6 Create org chart page wiring timeline and chart": [
@@ -135,6 +174,16 @@
         "executionId": "79e576f8-3019-4b7e-830a-b5dfe311fdb8",
         "chatSessionId": "sess_a4a9a10f-0eac-4b0c-8991-7110bdbb4973",
         "timestamp": 1787366731970
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369433756
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369744988
       }
     ],
     "5.1 Implement role search and history API": [
@@ -219,6 +268,37 @@
         "executionId": "79e576f8-3019-4b7e-830a-b5dfe311fdb8",
         "chatSessionId": "sess_a4a9a10f-0eac-4b0c-8991-7110bdbb4973",
         "timestamp": 1787367204449
+      }
+    ],
+    "4.2 Write property test for org chart temporal correctness": [
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787368869536
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369186369
+      }
+    ],
+    "4.5 Write property test for org chart node information": [
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369433055
+      },
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369744162
+      }
+    ],
+    "4. Timeline Slider and Org Chart (Member 2)": [
+      {
+        "executionId": "305c0642-d74a-4277-bb12-1eedfc24ff4f",
+        "chatSessionId": "sess_eeee1bdf-ce1d-488c-80ab-312d603b6730",
+        "timestamp": 1787369745090
       }
     ]
   }

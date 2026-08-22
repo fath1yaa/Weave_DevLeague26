@@ -73,26 +73,26 @@ This plan breaks the Weave application into parallelisable tasks aligned with th
 - [ ] 3. Checkpoint - Foundation and upload complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Timeline Slider and Org Chart (Member 2)
-  - [ ] 4.1 Implement org chart temporal query API
+- [x] 4. Timeline Slider and Org Chart (Member 2)
+  - [x] 4.1 Implement org chart temporal query API
     - Create `api/orgchart.php` with `?date=YYYY-MM-DD` parameter
     - Implement `getOrgStateAtDate()` function: query active roles and current assignments for the given date
     - Build hierarchical tree from `reports_to` relationships
     - Return JSON with date, date_range (min/max from data), and nodes array
     - _Requirements: 5.1, 5.2_
 
-  - [ ]* 4.2 Write property test for org chart temporal correctness
+  - [x]* 4.2 Write property test for org chart temporal correctness
     - **Property 9: Org chart temporal correctness**
     - **Validates: Requirements 5.1, 5.2**
 
-  - [ ] 4.3 Create timeline slider component
+  - [x] 4.3 Create timeline slider component
     - Create `assets/js/timeline-slider.js` with date range determination from API, manual drag/click selection
     - Implement play/pause animation mode with configurable speed (slow, medium, fast)
     - Emit custom `datechange` events for other components to listen to
     - Create `assets/css/timeline.css` with slider styling (track, thumb, date labels, play button)
     - _Requirements: 5.1, 5.3_
 
-  - [ ] 4.4 Create org chart renderer
+  - [x] 4.4 Create org chart renderer
     - Create `assets/js/orgchart.js` with hierarchical tree rendering using HTML/CSS (flexbox-based tree layout)
     - Display node details: role title, occupant name (or "Vacant"), reporting line
     - Animate transitions when date changes (CSS transitions for nodes appearing, disappearing, repositioning)
@@ -100,11 +100,11 @@ This plan breaks the Weave application into parallelisable tasks aligned with th
     - Create `assets/css/orgchart.css` with tree node styling, connectors, and animation keyframes
     - _Requirements: 5.2, 5.4, 5.5, 5.6_
 
-  - [ ]* 4.5 Write property test for org chart node information
+  - [x]* 4.5 Write property test for org chart node information
     - **Property 10: Org chart node information completeness**
     - **Validates: Requirements 5.5**
 
-  - [ ] 4.6 Create org chart page wiring timeline and chart
+  - [x] 4.6 Create org chart page wiring timeline and chart
     - Create `pages/orgchart.html` integrating timeline slider and org chart components
     - Wire `datechange` event from slider to fetch org state and re-render chart
     - Implement initial load (latest date or earliest date with data)

@@ -1,0 +1,219 @@
+/* ===================================
+   Weave - Timeline Slider Styles
+   Depends on the custom properties defined in main.css
+   =================================== */
+
+.timeline-slider {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+}
+
+.timeline-slider.is-disabled {
+    opacity: 0.65;
+}
+
+/* --- Controls row (play, speed, current date) --- */
+.timeline-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.timeline-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-size-base);
+    line-height: 1;
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.timeline-play:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+}
+
+.timeline-play:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+.timeline-play:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.timeline-play:disabled {
+    background-color: var(--color-gray-300);
+    cursor: not-allowed;
+}
+
+.timeline-play-icon {
+    pointer-events: none;
+}
+
+.timeline-slider.is-playing .timeline-play {
+    background-color: var(--color-secondary);
+}
+
+/* --- Speed selector --- */
+.timeline-speed {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+}
+
+.timeline-speed-label {
+    font-weight: 500;
+}
+
+.timeline-speed-select {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    color: var(--color-gray-800);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+}
+
+.timeline-speed-select:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+.timeline-speed-select:disabled {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-400);
+    cursor: not-allowed;
+}
+
+/* --- Current date readout --- */
+.timeline-current-date {
+    margin-left: auto;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* --- Track --- */
+.timeline-track-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: 0 12px;
+}
+
+.timeline-track {
+    position: relative;
+    height: 8px;
+    margin: 12px 0;
+    border-radius: var(--radius-full);
+    background-color: var(--color-gray-200);
+    cursor: pointer;
+    touch-action: none;
+}
+
+.timeline-track:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+}
+
+.timeline-slider.is-disabled .timeline-track {
+    cursor: not-allowed;
+}
+
+.timeline-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    transition: width var(--transition-fast);
+}
+
+/* --- Thumb --- */
+.timeline-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 3px solid var(--color-white);
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translate(-50%, -50%);
+    transition: left var(--transition-fast), transform var(--transition-fast);
+}
+
+.timeline-thumb:hover:not(:disabled) {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+.timeline-thumb:disabled {
+    background-color: var(--color-gray-400);
+    cursor: not-allowed;
+}
+
+/* While dragging, disable transitions so the thumb tracks the pointer 1:1. */
+.timeline-track.is-dragging .timeline-thumb,
+.timeline-track.is-dragging .timeline-fill {
+    transition: none;
+}
+
+.timeline-track.is-dragging .timeline-thumb {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+/* --- Date labels --- */
+.timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    .timeline-slider {
+        padding: var(--spacing-md);
+    }
+
+    .timeline-current-date {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+    .timeline-fill,
+    .timeline-thumb,
+    .timeline-play {
+        transition: none;
+    }
+}
