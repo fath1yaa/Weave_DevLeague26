@@ -12,7 +12,12 @@ html, body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: auto;
-    overflow-y: auto; /* Restores natural vertical scrolling */
+    overflow-y: auto;
+}
+
+/* --- Hide Horizontal Scroll Hint --- */
+.orgchart-scroll-hint {
+    display: none !important;
 }
 
 /* --- Compact Non-Sticky Timeline Header --- */
@@ -27,7 +32,7 @@ html, body {
     width: min(840px, 92vw);
     box-sizing: border-box;
     box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
-    position: static; /* Static positioning guarantees it never overlaps the canvas */
+    position: static;
     display: flex;
     flex-direction: column;
     gap: 6px;
