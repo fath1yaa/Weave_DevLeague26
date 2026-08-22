@@ -438,7 +438,10 @@ p {
 }
 
 .card-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     text-decoration: none;
     color: inherit;
 }
@@ -474,6 +477,15 @@ p {
 
 .card:hover .card-icon-emoji {
     transform: scale(1.15) translateY(-4px);
+}
+
+.card-icon-3d {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: var(--spacing-lg);
+    mix-blend-mode: multiply;
+    border-radius: var(--radius-md);
 }
 
 .card-icon.primary { background: var(--color-primary-light); color: var(--color-primary); }
@@ -952,5 +964,61 @@ tr:hover td {
 
     .container {
         padding: 0 var(--spacing-md);
+    }
+}
+
+
+/* --- Auth Navigation --- */
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-left: var(--spacing-md);
+}
+
+.auth-user-name {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.auth-login-btn {
+    font-size: var(--font-size-xs) !important;
+    padding: 6px 14px !important;
+    background: var(--color-primary-light) !important;
+    color: var(--color-primary) !important;
+    border-radius: var(--radius-full) !important;
+    font-weight: 600 !important;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.auth-login-btn:hover {
+    background: var(--color-white) !important;
+    transform: translateY(-1px);
+}
+
+.auth-logout-btn {
+    font-size: var(--font-size-xs) !important;
+    padding: 4px 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    border-radius: var(--radius-full) !important;
+    background: transparent !important;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.auth-logout-btn:hover {
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    color: var(--color-white) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+@media (max-width: 768px) {
+    .nav-auth {
+        position: absolute;
+        top: var(--spacing-md);
+        right: var(--spacing-xl);
     }
 }

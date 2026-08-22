@@ -352,10 +352,27 @@
     margin-bottom: var(--spacing-xs);
 }
 
+/* Icon variant that shows a department image instead of a letter */
+.department-card-icon--image {
+    width: 48px;
+    height: 48px;
+    background: var(--color-gray-50);
+    padding: 4px;
+    overflow: hidden;
+}
+
+.department-card-icon--image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 .department-card-name {
     font-weight: 600;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     color: var(--color-gray-800);
+    text-align: center;
 }
 
 .department-card-count {

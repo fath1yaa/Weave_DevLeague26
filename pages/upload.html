@@ -266,6 +266,7 @@
                     <li><a href="person-journey.html">People</a></li>
                     <li><a href="data-quality.html">Data Quality</a></li>
                 </ul>
+                <div class="nav-auth" id="auth-nav"></div>
             </div>
         </nav>
 
@@ -279,7 +280,16 @@
                 </div>
 
                 <!-- Upload Form -->
-                <form id="upload-form" aria-label="CSV file upload form">
+                <div id="auth-required-notice" data-auth-hidden class="card" style="padding: var(--spacing-2xl); text-align: center; margin-bottom: var(--spacing-xl);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto var(--spacing-md); display: block; color: var(--color-gray-400);">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <h3 style="margin-bottom: var(--spacing-sm);">Authentication Required</h3>
+                    <p style="color: var(--color-gray-500); margin-bottom: var(--spacing-md);">You need to be logged in as HR staff to upload data.</p>
+                    <a href="login.html" class="btn btn-primary">Login to Upload</a>
+                </div>
+                <form id="upload-form" aria-label="CSV file upload form" data-auth-required>
                     <div class="upload-grid">
                         <!-- Roles CSV -->
                         <div class="upload-card fade-in-up">
@@ -418,7 +428,7 @@
                 <section class="upload-history-section" id="upload-history-section" aria-label="Upload history">
                     <div class="history-actions">
                         <h2>Upload History</h2>
-                        <button class="btn btn-danger btn-sm" id="clear-all-btn" title="Clear all uploaded data and start fresh">
+                        <button class="btn btn-danger btn-sm" id="clear-all-btn" title="Clear all uploaded data and start fresh" data-auth-required>
                             Clear All Data
                         </button>
                     </div>
@@ -458,6 +468,7 @@
     </div>
 
     <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/csv-upload.js"></script>
 </body>
 </html>
