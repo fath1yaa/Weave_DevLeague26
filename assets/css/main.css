@@ -438,7 +438,10 @@ p {
 }
 
 .card-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     text-decoration: none;
     color: inherit;
 }
@@ -474,6 +477,15 @@ p {
 
 .card:hover .card-icon-emoji {
     transform: scale(1.15) translateY(-4px);
+}
+
+.card-icon-3d {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: var(--spacing-lg);
+    mix-blend-mode: multiply;
+    border-radius: var(--radius-md);
 }
 
 .card-icon.primary { background: var(--color-primary-light); color: var(--color-primary); }
