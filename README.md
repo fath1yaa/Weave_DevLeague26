@@ -1,157 +1,226 @@
-# Weave - Organisational Change Visualiser
+# Weave - Organisational History Visualisation
 
-Weave reconstructs and visualises organisational change over time. It accepts structured CSV data describing roles, people, and organisational events, then presents connected historical views showing how roles have evolved and how people have moved through the organisation.
+Weave is a web application that reconstructs and visualises organisational change over time. It allows HR teams and managers to upload CSV data about roles, people, and events, then explore how the organisation evolved through interactive timelines, org charts, and journey views.
 
-Built for **Lab 2 - People-Centric Tech & Collaboration**, powered by Setel.
+---
 
-## Tech Stack
+## Project Description
 
-| Layer    | Technology                    |
-|----------|-------------------------------|
-| Frontend | HTML, CSS, JavaScript         |
-| Backend  | PHP                           |
-| Storage  | JSON file storage (`data/`)   |
-| Server   | Any PHP-capable web server (e.g. XAMPP Apache) |
+**Lab:** Lab 2 - People-Centric Tech & Collaboration
 
-No database required. All data is stored as JSON files on disk.
+**Problem:** Organisations undergo constant structural change — roles are created, people move between positions, departments are restructured. This history is often scattered across spreadsheets, HRIS snapshots, and institutional memory, making it difficult to understand how the organisation arrived at its current state.
+
+**Solution:** Weave provides a centralised platform to import organisational data via CSV files, validate and cross-reference records, and present the history through interactive visualisations. Users can scrub through time to see the org chart at any point, trace a person's career journey, or track how a specific role has evolved.
+
+**How It Works:**
+1. Users upload CSV files containing roles, people, and organisational events
+2. The system validates data, flags inconsistencies (missing fields, unmatched references, duplicates), and stores valid records
+3. Interactive views let users explore the org chart timeline, individual role histories, person career journeys, and relationship connections between entities
+
+**Technologies & Tools:**
+- **Frontend:** Vanilla HTML5, CSS3, JavaScript (no framework dependencies)
+- **Backend:** PHP with JSON file-based storage
+- **Data Layer:** JSON flat files with file locking for concurrent access
+- **Database Schema:** MySQL schema provided for production deployment
+- **Architecture:** RESTful API with publish/subscribe event bus on the frontend
+
+**Target Users:** HR administrators, people operations teams, organisational development professionals, and managers who need to understand historical team structures and personnel movements.
+
+**What Makes It Unique:** Weave focuses on temporal reconstruction — instead of showing a single static org chart, it lets users navigate through time to see how the organisation looked at any given date, with animated transitions between states. It also features built-in data quality management that flags and surfaces issues for resolution rather than silently discarding problematic records.
+
+---
+
+## Project Structure
+
+```
+Weave_DevLeague26/
+├── api/                    # PHP backend API endpoints
+│   ├── includes/           # Shared utilities (store, auth, validation, CSV parsing)
+│   ├── auth.php            # Login/logout/session check
+│   ├── connections.php     # Entity relationship connections
+│   ├── dataquality.php     # Flagged records management
+│   ├── orgchart.php        # Org chart data by date
+│   ├── people.php          # People CRUD
+│   ├── roles.php           # Roles CRUD
+│   ├── upload.php          # CSV file upload and processing
+│   └── upload-history.php  # Upload audit log
+├── assets/
+│   ├── css/                # Stylesheets (main + page-specific)
+│   ├── img/                # Images and icons
+│   └── js/                 # Frontend JavaScript modules
+├── data/                   # JSON data store (runtime data files)
+├── database/               # MySQL schema and seed scripts
+│   ├── schema.sql          # Full database schema
+│   └── seed.sql            # Sample seed data
+├── pages/                  # HTML pages for each feature
+│   ├── connections.html    # Entity connection visualisation
+│   ├── data-quality.html   # Data quality dashboard
+│   ├── login.html          # Authentication page
+│   ├── orgchart.html       # Org chart timeline view
+│   ├── person-journey.html # Individual career journey
+│   ├── role-history.html   # Role evolution timeline
+│   └── upload.html         # CSV upload interface
+└── index.html              # Landing page / dashboard
+```
+
+---
+
+## Prerequisites
+
+- **PHP 7.4+** (with `fileinfo` extension enabled)
+- **A web server** — Apache (with `mod_rewrite`) or Nginx, or PHP's built-in development server
+- **Web browser** — Any modern browser (Chrome, Firefox, Edge, Safari)
+
+Optional for production:
+- **MySQL 5.7+** or **MariaDB 10.3+** (if migrating from JSON storage to database)
+
+---
+
+## Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/Weave_DevLeague26.git
+cd Weave_DevLeague26
+```
+
+### 2. Ensure the Data Directory is Writable
+
+The application stores data in the `data/` directory. Make sure your web server can write to it:
+
+```bash
+# Linux/macOS
+chmod -R 775 data/
+
+# Windows (PowerShell) — typically writable by default
+# If issues arise, check folder permissions in Properties > Security
+```
+
+### 3. Start the Development Server
+
+The quickest way to run Weave locally is with PHP's built-in server:
+
+```bash
+php -S localhost:8000
+```
+
+Then open your browser to: **http://localhost:8000**
+
+### Alternative: Apache/Nginx
+
+If using Apache, point your document root to the project folder. The `data/.htaccess` file already blocks direct web access to JSON data files.
+
+For Nginx, add a location block to deny access to the `data/` directory:
+
+```nginx
+location /data/ {
+    deny all;
+}
+```
+
+---
+
+## Running the Project
+
+1. Start the PHP development server (see above)
+2. Navigate to **http://localhost:8000** in your browser
+3. Log in with the following credentials:
+   - **Username:** `hrAdmin`
+   - **Password:** `hrAdmin123@`
+4. Upload CSV data via the **Upload** page
+5. Explore the organisation through the available views
+
+---
+
+## CSV Data Format
+
+Weave accepts three types of CSV files:
+
+### roles.csv
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| role_id | Yes | Unique role identifier (e.g., R001) |
+| title | Yes | Role title |
+| department | Yes | Department name |
+| reports_to | No | Parent role_id |
+| effective_from | Yes | Start date (YYYY-MM-DD) |
+| effective_to | No | End date (YYYY-MM-DD), empty if current |
+
+### people.csv
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| person_id | Yes | Unique person identifier (e.g., P001) |
+| name | Yes | Full name |
+| role_id | Yes | Assigned role_id |
+| start_date | Yes | Assignment start (YYYY-MM-DD) |
+| end_date | No | Assignment end (YYYY-MM-DD), empty if current |
+
+### events.csv
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| event_id | Yes | Unique event identifier (e.g., E001) |
+| event_type | Yes | One of: title_change, reporting_change, promotion, transfer, department_change, hire, departure, restructure |
+| entity_type | Yes | Either "role" or "person" |
+| entity_id | Yes | The role_id or person_id this event affects |
+| previous_value | No | Value before the change |
+| new_value | No | Value after the change |
+| effective_date | Yes | When the event occurred (YYYY-MM-DD) |
+| description | No | Human-readable description |
+
+---
 
 ## Features
 
-- **CSV Upload & Data Ingestion** - Upload roles, people, and events CSV files. The system validates, parses, and stores records while flagging problematic rows for manual review.
-- **Role History View** - Search for any role and see its complete evolution: title changes, reporting-line shifts, redesignations, and the list of people who have held the role.
-- **Person Journey View** - Search for any person and trace their career path: promotions, transfers, department changes, and manager changes over time.
-- **Animated Timeline & Org Chart** - Drag a slider to any date and see the org structure at that moment. Play an animation to watch the organisation evolve in real time.
-- **Connected Views** - Navigate seamlessly between role history and person journey. Temporal correlations between structural changes and personal movements are highlighted.
-- **Data Quality Management** - Review flagged records categorised by issue type, resolve them inline, and track overall data quality with a live percentage score.
+- **CSV Upload & Validation** — Import organisational data with automatic validation and error flagging
+- **Org Chart Timeline** — Interactive org chart with a time slider to see the structure at any date
+- **Role History** — Track how any role evolved over time (title changes, reporting line shifts, occupants)
+- **Person Journey** — Follow an individual's career path through the organisation
+- **Connections View** — Visualise relationships and connections between entities
+- **Data Quality Dashboard** — Review, investigate, and resolve flagged data inconsistencies
+- **Authentication** — Session-based login to protect data uploads and modifications
 
-## Setup Instructions
+---
 
-### Quick Start (Recommended)
+## API Endpoints
 
-Prerequisites: PHP 7.4+ installed ([download](https://www.php.net/downloads))
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth.php?action=check` | Check auth status |
+| POST | `/api/auth.php?action=login` | Log in |
+| POST | `/api/auth.php?action=logout` | Log out |
+| POST | `/api/upload.php` | Upload CSV files (multipart form) |
+| GET | `/api/roles.php` | Query roles |
+| GET | `/api/people.php` | Query people |
+| GET | `/api/orgchart.php` | Get org chart for a date |
+| GET | `/api/connections.php` | Get entity connections |
+| GET | `/api/dataquality.php` | Get flagged records |
+| GET | `/api/upload-history.php` | Get upload audit log |
+
+---
+
+## Optional: Database Setup (MySQL)
+
+For production use with MySQL instead of JSON files:
 
 ```bash
-# Clone the repo
-git clone <repository-url> weave
-cd weave
-
-# Start the server
-php -S localhost:8000 router.php
+mysql -u root -p < database/schema.sql
+mysql -u root -p weave_db < database/seed.sql
 ```
 
-Open http://localhost:8000 in your browser. Done!
+Update the database connection settings in `api/includes/db.php` as needed.
 
-Or on Windows, just double-click `start.bat`. On Mac/Linux, run:
-```bash
-chmod +x start.sh
-./start.sh
-```
+---
 
-The app works immediately with pre-loaded sample data in the `data/` directory.
+## Team
 
-### Alternative: XAMPP
+DevLeague 26
 
-If you prefer using XAMPP (or any Apache-based web server):
+---
 
-1. **Start your web server** - Open XAMPP Control Panel and start **Apache**.
+## License
 
-2. **Clone the project** into your `htdocs` directory:
-   ```bash
-   cd C:\xampp\htdocs
-   git clone <repository-url> weave
-   ```
-   Alternatively, copy this project folder into `C:\xampp\htdocs\weave`.
-
-3. **Open the application** at:
-   ```
-   http://localhost/weave/
-   ```
-
-## Sample Data
-
-The application ships with pre-loaded JSON data in the `data/` directory, so it's ready to use out of the box.
-
-Additionally, the `sample-data/` directory contains raw CSV files (roles, people, and events) for testing the Upload feature. Some rows are intentionally invalid to exercise data quality detection. See `sample-data/README.md` for details.
-
-## Task Allocation
-
-This project is divided among 4 team members who can work concurrently after the foundation layer is established.
-
-| Member   | Responsibility                      | Key Files                                                                                          |
-|----------|-------------------------------------|----------------------------------------------------------------------------------------------------|
-| Member 1 | CSV Upload & Data Ingestion         | `api/upload.php`, `api/includes/csv-parser.php`, `api/includes/validator.php`, `pages/upload.html`  |
-| Member 2 | Timeline Slider & Org Chart         | `api/orgchart.php`, `assets/js/timeline-slider.js`, `assets/js/orgchart.js`                        |
-| Member 3 | Role History & Person Journey       | `api/roles.php`, `api/people.php`, `api/connections.php`                                           |
-| Member 4 | Data Quality & Storage              | `data/*.json`, `api/dataquality.php`, `api/includes/db.php`                                        |
-
-### Workflow
-
-1. **Foundation first** - Member 4 sets up the JSON storage layer and shared PHP utilities. Any member creates the directory structure and landing page.
-2. **Parallel development** - Each member builds their feature area independently.
-3. **Integration** - Wire navigation, cross-page links, and run end-to-end testing.
-
-## Directory Structure
-
-```
-weave/
-├── index.html                    # Landing page / dashboard
-├── README.md                     # Project overview and task allocation
-├── router.php                    # Router for PHP built-in dev server
-├── start.bat                     # Windows startup script
-├── start.sh                      # Mac/Linux startup script
-├── assets/
-│   ├── css/
-│   │   ├── main.css              # Global styles
-│   │   ├── timeline.css          # Timeline slider styles
-│   │   ├── orgchart.css          # Org chart styles
-│   │   ├── connections.css       # Connected views styles
-│   │   ├── role-history.css      # Role history page styles
-│   │   ├── person-journey.css    # Person journey page styles
-│   │   └── dataquality.css       # Data quality page styles
-│   ├── js/
-│   │   ├── app.js                # Main application bootstrap
-│   │   ├── csv-upload.js         # File upload handling
-│   │   ├── timeline-slider.js    # Animated timeline control
-│   │   ├── orgchart.js           # Org chart rendering (tree layout)
-│   │   ├── role-history.js       # Role history view logic
-│   │   ├── person-journey.js     # Person journey view logic
-│   │   ├── connection-view.js    # Connected views logic
-│   │   └── data-quality.js       # Data quality page logic
-│   └── img/                      # Icons and images
-├── api/
-│   ├── upload.php                # CSV upload endpoint
-│   ├── roles.php                 # Role queries (search, history)
-│   ├── people.php                # Person queries (search, journey)
-│   ├── orgchart.php              # Org chart state at date
-│   ├── connections.php           # Connected view queries
-│   ├── dataquality.php           # Flagged records CRUD
-│   └── includes/
-│       ├── db.php                # JSON storage read/write helpers
-│       ├── csv-parser.php        # CSV parsing and validation
-│       ├── validator.php         # Record validation logic
-│       └── helpers.php           # Shared utility functions
-├── data/
-│   ├── .htaccess                 # Blocks direct browser access
-│   ├── roles.json                # Role definitions
-│   ├── people.json               # People records
-│   ├── events.json               # Organisational change events
-│   ├── role_assignments.json     # Role-to-person assignments
-│   └── flagged_records.json      # Data quality issues
-├── pages/
-│   ├── upload.html               # CSV upload page
-│   ├── role-history.html         # Role history view page
-│   ├── person-journey.html       # Person journey view page
-│   ├── orgchart.html             # Org chart + timeline page
-│   ├── connections.html          # Connected views page
-│   └── data-quality.html         # Data quality management page
-├── sample-data/
-│   ├── README.md                 # CSV format documentation
-│   ├── roles.csv                 # Sample roles for upload testing
-│   ├── people.csv                # Sample people for upload testing
-│   └── events.csv                # Sample events for upload testing
-└── tests/                        # Automated tests
-```
-
-## Hackathon Context
-
-This project was developed for **DevLeague 2026 - Lab 2: People-Centric Tech & Collaboration**, powered by Setel. The challenge focuses on building technology solutions that place people at the centre, enabling better understanding of how organisations evolve and how individuals navigate structural change.
+This project was developed as part of the DevLeague programme.
