@@ -410,3 +410,134 @@ const CSVUpload = (() => {
 document.addEventListener('DOMContentLoaded', () => {
     CSVUpload.init();
 });
+
+
+
+// ============================================================
+// Upload History Module
+// ============================================================
+
+const UploadHistory = (() => {
+    const HISTORY_ENDPOINT = '../api/upload-history.php';
+
+    let historyTbody;
+    let historyEmpty;
+    let historyTableWrapper;
+    let clearAllBtn;
+
+    function init() {
+        historyTbody = document.getElementById('history-tbody');
+        historyEmpty = document.getElementById('history-empty');
+        historyTableWrapper = document.getElementById('history-table-wrapper');
+        clearAllBtn = document.getElementById('clear-all-btn');
+
+        if (!historyTbody) return;
+
+        clearAllBtn.addEventListener('click', handleClearAll);
+        loadHistory();
+
+        // Refresh after upload completes
+        EventBus.on('upload:complete', () => loadHistory());
+    }
+
+    async function loadHistory() {
+        try {
+            const response = await fetch(HISTORY_ENDPOINT);
+            if (!response.ok) return;
+            const data = await response.json();
+
+            if (data.success && data.history) {
+                renderHistory(data.history);
+            }
+        } catch (error) {
+            console.error('Failed to load upload history:', error);
+        }
+    }
+
+    function renderHistory(history) {
+        if (history.length === 0) {
+            historyTableWrapper.classList.add('hidden');
+            historyEmpty.classList.remove('hidden');
+            return;
+        }
+
+        historyTableWrapper.classList.remove('hidden');
+        historyEmpty.classList.add('hidden');
+
+        historyTbody.innerHTML = history.map(record => `
+            <tr>
+                <td><strong>${escapeHtml(record.file_name)}</strong></td>
+                <td><span class="badge badge-${getBadgeType(record.file_type)}">${escapeHtml(record.file_type)}</span></td>
+                <td>${record.records_imported}</td>
+                <td>${record.records_flagged}</td>
+                <td>${formatUploadDate(record.uploaded_at)}</td>
+                <td>
+                    <button class="delete-btn" data-id="${record.id}" aria-label="Remove record for ${escapeHtml(record.file_name)}">
+                        &times; Remove
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Attach delete handlers
+        historyTbody.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => handleDeleteRecord(btn.dataset.id));
+        });
+    }
+
+    async function handleDeleteRecord(id) {
+        if (!confirm('Remove this upload record?')) return;
+
+        try {
+            const response = await fetch(`${HISTORY_ENDPOINT}?id=${id}`, { method: 'DELETE' });
+            const data = await response.json();
+
+            if (data.success) {
+                Toast.success('Record removed.');
+                loadHistory();
+            } else {
+                Toast.error(data.error || 'Failed to remove record.');
+            }
+        } catch (error) {
+            Toast.error('Failed to remove record.');
+        }
+    }
+
+    async function handleClearAll() {
+        if (!confirm('This will delete ALL uploaded data (roles, people, events, flags) and start fresh. Are you sure?')) return;
+
+        try {
+            const response = await fetch(`${HISTORY_ENDPOINT}?clear_all=true`, { method: 'DELETE' });
+            const data = await response.json();
+
+            if (data.success) {
+                Toast.success('All data cleared.');
+                loadHistory();
+            } else {
+                Toast.error(data.error || 'Failed to clear data.');
+            }
+        } catch (error) {
+            Toast.error('Failed to clear data.');
+        }
+    }
+
+    function getBadgeType(fileType) {
+        const map = { roles: 'primary', people: 'success', events: 'warning' };
+        return map[fileType] || 'info';
+    }
+
+    function formatUploadDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', {
+            day: 'numeric', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    }
+
+    return { init, loadHistory };
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+    UploadHistory.init();
+});

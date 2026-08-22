@@ -27,7 +27,8 @@ function storeFilePath($storeName) {
         'people'           => 'people.json',
         'events'           => 'events.json',
         'role_assignments' => 'role_assignments.json',
-        'flagged_records'  => 'flagged_records.json'
+        'flagged_records'  => 'flagged_records.json',
+        'upload_history'   => 'upload_history.json'
     ];
 
     if (!isset($map[$storeName])) {
