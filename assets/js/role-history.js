@@ -356,6 +356,16 @@ const RoleHistory = (() => {
         }
     }
 
+    // Department name -> icon image. Names are matched case-insensitively.
+    // Departments without an entry fall back to a coloured letter initial.
+    const DEPARTMENT_ICONS = {
+        engineering: '../assets/img/engineering.jpg',
+        finance: '../assets/img/business.jpg',
+        marketing: '../assets/img/marketing.jpg',
+        operations: '../assets/img/operation.jpg',
+        executive: '../assets/img/executive.jpg'
+    };
+
     /**
      * Render department cards
      */
@@ -367,6 +377,15 @@ const RoleHistory = (() => {
             const initial = dept.name.charAt(0).toUpperCase();
             const roleCount = dept.role_count;
             const rolePreview = dept.roles.slice(0, 3);
+            const iconSrc = DEPARTMENT_ICONS[dept.name.trim().toLowerCase()];
+
+            const iconMarkup = iconSrc
+                ? `<div class="department-card-icon department-card-icon--image">
+                       <img src="${escapeHtml(iconSrc)}" alt="" aria-hidden="true">
+                   </div>`
+                : `<div class="department-card-icon" style="background: var(--color-${color}-light); color: var(--color-${color});">
+                       ${initial}
+                   </div>`;
 
             return `
                 <div class="department-card" 
@@ -374,9 +393,7 @@ const RoleHistory = (() => {
                      role="button"
                      data-department="${escapeHtml(dept.name)}"
                      aria-label="${escapeHtml(dept.name)} department with ${roleCount} roles">
-                    <div class="department-card-icon" style="background: var(--color-${color}-light); color: var(--color-${color});">
-                        ${initial}
-                    </div>
+                    ${iconMarkup}
                     <div class="department-card-name">${escapeHtml(dept.name)}</div>
                     <div class="department-card-count">${roleCount} role${roleCount !== 1 ? 's' : ''}</div>
                     <div class="department-card-roles">
