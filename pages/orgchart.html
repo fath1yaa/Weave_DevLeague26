@@ -78,16 +78,45 @@
                     <!-- Slider -->
                     <div class="timeline-slider-wrapper">
                         <label for="timeline-slider" class="sr-only">Timeline date slider</label>
+                        <!-- Hidden native range for accessibility -->
                         <input 
                             type="range" 
                             id="timeline-slider" 
-                            class="timeline-slider"
+                            class="timeline-slider-hidden"
                             min="0" 
                             max="100" 
                             value="100"
                             aria-valuetext="Current date"
                         >
-                        <div class="timeline-range-labels">
+                        <!-- Custom curved SVG track -->
+                        <div class="curved-slider" id="curved-slider" aria-hidden="true">
+                            <svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid meet" class="curved-slider-svg">
+                                <!-- Background track - multiple C-curves up and down -->
+                                <path id="curve-track-bg" 
+                                      d="M 0,200 C 50,200 50,40 133,40 C 216,40 216,200 266,200 C 316,200 316,40 400,40 C 484,40 484,200 533,200 C 583,200 583,40 666,40 C 750,40 750,200 800,200" 
+                                      fill="none" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round"/>
+                                <!-- Filled track (progress) -->
+                                <path id="curve-track-fill" 
+                                      d="M 0,200 C 50,200 50,40 133,40 C 216,40 216,200 266,200 C 316,200 316,40 400,40 C 484,40 484,200 533,200 C 583,200 583,40 666,40 C 750,40 750,200 800,200" 
+                                      fill="none" stroke="#1a3a4a" stroke-width="5" stroke-linecap="round"
+                                      stroke-dasharray="0 9999"/>
+                                <!-- Thumb circle -->
+                                <circle id="curve-thumb" cx="800" cy="200" r="12" 
+                                        fill="white" stroke="#1a3a4a" stroke-width="4" 
+                                        style="cursor: grab; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"/>
+                                <!-- Year labels at peaks and valleys -->
+                                <!-- Peaks (top) - 2021, 2023, 2025 -->
+                                <text x="133" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a4a">2021</text>
+                                <text x="400" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a4a">2023</text>
+                                <text x="666" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a4a">2025</text>
+                                <!-- Valleys (bottom) - 2020, 2022, 2024, 2026 -->
+                                <text x="0" y="225" text-anchor="start" font-size="14" font-weight="700" fill="#1a3a4a">2020</text>
+                                <text x="266" y="225" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a4a">2022</text>
+                                <text x="533" y="225" text-anchor="middle" font-size="14" font-weight="700" fill="#1a3a4a">2024</text>
+                                <text x="800" y="225" text-anchor="end" font-size="14" font-weight="700" fill="#1a3a4a">2026</text>
+                            </svg>
+                        </div>
+                        <div class="timeline-range-labels hidden">
                             <span id="timeline-range-min">—</span>
                             <span id="timeline-range-max">—</span>
                         </div>

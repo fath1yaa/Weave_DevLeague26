@@ -108,6 +108,13 @@ const TimelineSlider = (() => {
             debouncedSlide();
         });
 
+        // Curved slider click/drag support
+        const curvedSlider = document.getElementById('curved-slider');
+        if (curvedSlider) {
+            curvedSlider.addEventListener('mousedown', handleCurvedSliderStart);
+            curvedSlider.addEventListener('touchstart', handleCurvedSliderStart, { passive: false });
+        }
+
         // Play/Pause button
         if (playBtn) {
             playBtn.addEventListener('click', togglePlay);
@@ -125,6 +132,50 @@ const TimelineSlider = (() => {
 
         // Keyboard shortcuts
         document.addEventListener('keydown', handleKeydown);
+    }
+
+    /**
+     * Handle curved slider mouse/touch interaction
+     */
+    function handleCurvedSliderStart(e) {
+        e.preventDefault();
+        updateSliderFromCurvedPosition(e);
+
+        const moveHandler = (ev) => {
+            ev.preventDefault();
+            updateSliderFromCurvedPosition(ev);
+        };
+        const upHandler = () => {
+            document.removeEventListener('mousemove', moveHandler);
+            document.removeEventListener('mouseup', upHandler);
+            document.removeEventListener('touchmove', moveHandler);
+            document.removeEventListener('touchend', upHandler);
+        };
+
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('mouseup', upHandler);
+        document.addEventListener('touchmove', moveHandler, { passive: false });
+        document.addEventListener('touchend', upHandler);
+    }
+
+    /**
+     * Convert click/drag position on curved slider to slider value
+     */
+    function updateSliderFromCurvedPosition(e) {
+        const curvedSlider = document.getElementById('curved-slider');
+        if (!curvedSlider) return;
+
+        const rect = curvedSlider.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let ratio = (clientX - rect.left) / rect.width;
+        ratio = Math.max(0, Math.min(1, ratio));
+
+        const newValue = Math.round(ratio * totalDays);
+        slider.value = newValue;
+        updateDateFromSlider();
+        updateDateDisplay();
+        updateSliderProgress();
+        emitDateChange();
     }
 
     /**
@@ -157,12 +208,30 @@ const TimelineSlider = (() => {
     }
 
     /**
-     * Update slider track fill (CSS custom property)
+     * Update slider track fill (SVG curved path)
      */
     function updateSliderProgress() {
-        if (slider && totalDays > 0) {
-            const progress = (parseInt(slider.value, 10) / totalDays) * 100;
-            slider.style.setProperty('--slider-progress', progress + '%');
+        if (!slider || totalDays === 0) return;
+
+        const progress = parseInt(slider.value, 10) / totalDays;
+        
+        // Update the SVG curved track
+        const trackFill = document.getElementById('curve-track-fill');
+        const thumb = document.getElementById('curve-thumb');
+        const trackBg = document.getElementById('curve-track-bg');
+
+        if (trackFill && thumb && trackBg) {
+            // Get total path length
+            const pathLength = trackBg.getTotalLength();
+            const fillLength = pathLength * progress;
+
+            // Set dasharray to show only the filled portion
+            trackFill.style.strokeDasharray = `${fillLength} ${pathLength}`;
+
+            // Move thumb along the path
+            const point = trackBg.getPointAtLength(fillLength);
+            thumb.setAttribute('cx', point.x);
+            thumb.setAttribute('cy', point.y);
         }
     }
 
