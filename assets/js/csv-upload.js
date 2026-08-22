@@ -268,6 +268,7 @@ const CSVUpload = (() => {
 
             const response = await fetch(UPLOAD_ENDPOINT, {
                 method: 'POST',
+                credentials: 'same-origin',
                 body: formData
             });
 

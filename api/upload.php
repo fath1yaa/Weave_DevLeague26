@@ -11,11 +11,13 @@ require_once __DIR__ . '/includes/store.php';
 require_once __DIR__ . '/includes/csv-parser.php';
 require_once __DIR__ . '/includes/validator.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/auth.php';
 
 // CORS headers for frontend access
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: ' . (isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '*'));
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -27,6 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     errorResponse('Method not allowed. Use POST.', 405);
 }
+
+// Require authentication for uploads
+requireAuth();
 
 // Maximum file size: 10MB
 define('MAX_FILE_SIZE', 10 * 1024 * 1024);

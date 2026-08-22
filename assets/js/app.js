@@ -279,7 +279,7 @@ const API = (() => {
     async function get(endpoint) {
         const url = getBaseUrl() + endpoint;
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, { credentials: 'same-origin' });
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new APIError(response.status, errorData.message || response.statusText, errorData);
@@ -301,6 +301,7 @@ const API = (() => {
         const url = getBaseUrl() + endpoint;
         const options = {
             method: 'POST',
+            credentials: 'same-origin',
         };
 
         if (data instanceof FormData) {
@@ -334,6 +335,7 @@ const API = (() => {
         try {
             const response = await fetch(url, {
                 method: 'PUT',
+                credentials: 'same-origin',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });

@@ -9,11 +9,13 @@
 
 require_once __DIR__ . '/includes/store.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/auth.php';
 
 // CORS headers
-header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: ' . (isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '*'));
 header('Access-Control-Allow-Methods: GET, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -25,6 +27,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
         handleGet();
         break;
     case 'DELETE':
+        // Require authentication for destructive operations
+        requireAuth();
         handleDelete();
         break;
     default:
