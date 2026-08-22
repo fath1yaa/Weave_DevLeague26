@@ -5,6 +5,7 @@
  * Provides person search and journey functionality.
  * 
  * Actions:
+ *   ?action=list                        - List all people with current role/department
  *   ?action=search&q={query}            - Search people by name or person_id
  *   ?action=journey&person_id={id}      - Get chronological career journey of a person
  *   ?action=detail&person_id={id}       - Get current person details with active role
@@ -20,6 +21,9 @@ header('Access-Control-Allow-Methods: GET');
 $action = isset($_GET['action']) ? sanitizeInput($_GET['action']) : '';
 
 switch ($action) {
+    case 'list':
+        handleList();
+        break;
     case 'search':
         handleSearch();
         break;
@@ -30,7 +34,62 @@ switch ($action) {
         handleDetail();
         break;
     default:
-        errorResponse('Invalid action. Use: search, journey, or detail', 400);
+        errorResponse('Invalid action. Use: list, search, journey, or detail', 400);
+}
+
+/**
+ * List all people with their current role and department.
+ * GET ?action=list
+ */
+function handleList() {
+    $people = storeRead('people');
+    $assignments = storeRead('role_assignments');
+    $roles = storeRead('roles');
+
+    // Sort people by name ASC
+    usort($people, function ($a, $b) {
+        return strcmp($a['name'], $b['name']);
+    });
+
+    // Index roles by role_id
+    $rolesMap = [];
+    foreach ($roles as $r) {
+        $rolesMap[$r['role_id']] = $r;
+    }
+
+    // Build results with current_role, current_department and role count
+    $results = [];
+    foreach ($people as $person) {
+        $currentRole = null;
+        $currentDepartment = null;
+        $roleCount = 0;
+
+        foreach ($assignments as $a) {
+            if ($a['person_id'] !== $person['person_id']) {
+                continue;
+            }
+            $roleCount++;
+            // Current assignment (end_date IS NULL)
+            if ($a['end_date'] === null && isset($rolesMap[$a['role_id']])) {
+                $currentRole = $rolesMap[$a['role_id']]['title'];
+                $currentDepartment = $rolesMap[$a['role_id']]['department'];
+            }
+        }
+
+        $results[] = [
+            'person_id'          => $person['person_id'],
+            'name'               => $person['name'],
+            'current_role'       => $currentRole,
+            'current_department' => $currentDepartment,
+            'role_count'         => $roleCount
+        ];
+    }
+
+    jsonResponse([
+        'success' => true,
+        'count'   => count($results),
+        'results' => $results
+    ]);
 }
 
 /**
