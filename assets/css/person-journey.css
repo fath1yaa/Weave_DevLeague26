@@ -5,16 +5,23 @@
 /* --- Search Section --- */
 .search-section {
     margin-bottom: var(--spacing-2xl);
+    position: relative;
+    /* Keep the search + its dropdown above the People directory grid
+       (which makes its own stacking context via the fade-in-up transform),
+       but below the sticky navbar (z-index: 100) so it doesn't overlap it
+       while scrolling. */
+    z-index: 10;
 }
 
 .search-wrapper {
     position: relative;
-    max-width: 600px;
+    max-width: 100%;
 }
 
 .search-input {
     padding-left: var(--spacing-lg);
     font-size: var(--font-size-lg);
+    border-width: 2px;
 }
 
 .search-dropdown {
@@ -29,7 +36,7 @@
     box-shadow: var(--shadow-lg);
     max-height: 320px;
     overflow-y: auto;
-    z-index: 50;
+    z-index: 20;
 }
 
 .search-dropdown-item {
@@ -105,13 +112,13 @@
 }
 
 .person-title-block h2 {
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
 }
 
 .person-meta {
     display: flex;
     gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
 }
 
 .person-current-role {
@@ -147,7 +154,7 @@
 /* --- Content Grid --- */
 .person-content-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: var(--spacing-xl);
 }
 
@@ -333,4 +340,107 @@
     background: var(--color-success-light);
     color: var(--color-success);
     border-radius: var(--radius-sm);
+}
+
+/* --- People Directory Section --- */
+.people-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.section-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-gray-800);
+}
+
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.person-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.person-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.person-card:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.person-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.person-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.person-card-name {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-gray-800);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.person-card-meta {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+.person-card-role {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.person-card-dept {
+    display: inline-block;
+    padding: 1px var(--spacing-sm);
+    background: var(--color-info-light);
+    color: var(--color-info);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+
+.people-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-gray-500);
 }

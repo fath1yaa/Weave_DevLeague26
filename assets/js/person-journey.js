@@ -23,6 +23,7 @@ const PersonJourney = (() => {
         cacheElements();
         bindEvents();
         checkUrlParams();
+        loadPeople();
     }
 
     /**
@@ -315,6 +316,83 @@ const PersonJourney = (() => {
                 </div>
             `;
         }).join('');
+    }
+
+    /**
+     * Load and display all people from the API
+     */
+    async function loadPeople() {
+        const grid = document.getElementById('people-grid');
+        if (!grid) return;
+
+        try {
+            const data = await API.get('people.php?action=list');
+            if (data.success && data.results.length > 0) {
+                renderPeople(grid, data.results);
+            } else {
+                grid.innerHTML = `
+                    <div class="people-empty">
+                        <p class="text-muted">No people found. Upload a people CSV to see them here.</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Failed to load people:', error);
+            grid.innerHTML = `
+                <div class="people-empty">
+                    <p class="text-muted">No people found. Upload a people CSV to see them here.</p>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Render person cards into the directory grid
+     */
+    function renderPeople(container, people) {
+        const colors = ['primary', 'secondary', 'success', 'warning', 'info'];
+
+        container.innerHTML = people.map((person, i) => {
+            const color = colors[i % colors.length];
+            const initials = person.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            const roleCount = person.role_count || 0;
+
+            return `
+                <div class="person-card"
+                     tabindex="0"
+                     role="button"
+                     data-person-id="${escapeHtml(person.person_id)}"
+                     aria-label="View journey for ${escapeHtml(person.name)}">
+                    <div class="person-card-avatar" style="background: var(--color-${color}-light); color: var(--color-${color});">
+                        ${escapeHtml(initials)}
+                    </div>
+                    <div class="person-card-body">
+                        <div class="person-card-name">${escapeHtml(person.name)}</div>
+                        <div class="person-card-meta">${escapeHtml(person.person_id)}</div>
+                        <div class="person-card-role">
+                            ${person.current_role
+                                ? escapeHtml(person.current_role)
+                                : '<span class="text-muted"><em>No active role</em></span>'}
+                            ${person.current_department ? `<span class="person-card-dept">${escapeHtml(person.current_department)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Bind click / keyboard events - open the person's journey
+        container.querySelectorAll('.person-card').forEach(card => {
+            const handler = () => {
+                const personId = card.dataset.personId;
+                searchInput.value = card.querySelector('.person-card-name').textContent;
+                hideDropdown();
+                loadPersonJourney(personId);
+            };
+            card.addEventListener('click', handler);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handler();
+            });
+        });
     }
 
     // UI helpers

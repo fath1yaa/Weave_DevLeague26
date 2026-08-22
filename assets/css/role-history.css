@@ -5,6 +5,12 @@
 /* --- Search Section --- */
 .search-section {
     margin-bottom: var(--spacing-2xl);
+    position: relative;
+    /* Keep the search + its dropdown above the Departments grid
+       (which makes its own stacking context via the fade-in-up transform),
+       but below the sticky navbar (z-index: 100) so it doesn't overlap it
+       while scrolling. */
+    z-index: 10;
 }
 
 .search-wrapper {
@@ -30,7 +36,7 @@
     box-shadow: var(--shadow-lg);
     max-height: 320px;
     overflow-y: auto;
-    z-index: 50;
+    z-index: 20;
 }
 
 .search-dropdown-item {
@@ -350,10 +356,27 @@
     margin-bottom: var(--spacing-xs);
 }
 
+/* Icon variant that shows a department image instead of a letter */
+.department-card-icon--image {
+    width: 48px;
+    height: 48px;
+    background: var(--color-gray-50);
+    padding: 4px;
+    overflow: hidden;
+}
+
+.department-card-icon--image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 .department-card-name {
     font-weight: 600;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     color: var(--color-gray-800);
+    text-align: center;
 }
 
 .department-card-count {
