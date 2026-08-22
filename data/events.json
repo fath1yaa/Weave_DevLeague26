@@ -1,0 +1,212 @@
+[
+    {
+        "event_id": "E001",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P001",
+        "previous_value": null,
+        "new_value": "Chief Executive Officer",
+        "effective_date": "2020-01-01",
+        "description": "Sarah Chen appointed as CEO"
+    },
+    {
+        "event_id": "E002",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P002",
+        "previous_value": null,
+        "new_value": "VP Engineering",
+        "effective_date": "2020-01-01",
+        "description": "David Kumar joins as VP Engineering"
+    },
+    {
+        "event_id": "E003",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P003",
+        "previous_value": null,
+        "new_value": "VP Marketing",
+        "effective_date": "2020-01-01",
+        "description": "Emily Watson joins as VP Marketing"
+    },
+    {
+        "event_id": "E004",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P005",
+        "previous_value": null,
+        "new_value": "VP Operations",
+        "effective_date": "2020-03-15",
+        "description": "Lisa Park hired as VP Operations"
+    },
+    {
+        "event_id": "E005",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P006",
+        "previous_value": null,
+        "new_value": "Engineering Manager",
+        "effective_date": "2020-01-01",
+        "description": "Michael Thompson joins as Engineering Manager"
+    },
+    {
+        "event_id": "E006",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P008",
+        "previous_value": null,
+        "new_value": "Senior Software Engineer",
+        "effective_date": "2020-02-01",
+        "description": "Robert Nguyen hired as Senior Software Engineer"
+    },
+    {
+        "event_id": "E007",
+        "event_type": "promotion",
+        "entity_type": "person",
+        "entity_id": "P007",
+        "previous_value": "Software Engineer",
+        "new_value": "Engineering Manager",
+        "effective_date": "2023-01-01",
+        "description": "Anna Kowalski promoted to Engineering Manager"
+    },
+    {
+        "event_id": "E008",
+        "event_type": "departure",
+        "entity_type": "person",
+        "entity_id": "P006",
+        "previous_value": "Engineering Manager",
+        "new_value": null,
+        "effective_date": "2022-12-31",
+        "description": "Michael Thompson departs the Engineering Manager role"
+    },
+    {
+        "event_id": "E009",
+        "event_type": "title_change",
+        "entity_type": "role",
+        "entity_id": "R008",
+        "previous_value": "Marketing Manager",
+        "new_value": "Digital Marketing Lead",
+        "effective_date": "2023-07-01",
+        "description": "Marketing Manager role redesignated to Digital Marketing Lead"
+    },
+    {
+        "event_id": "E010",
+        "event_type": "department_change",
+        "entity_type": "person",
+        "entity_id": "P010",
+        "previous_value": "Marketing",
+        "new_value": "Marketing",
+        "effective_date": "2023-07-01",
+        "description": "Thomas Anderson continues under restructured marketing team"
+    },
+    {
+        "event_id": "E011",
+        "event_type": "restructure",
+        "entity_type": "role",
+        "entity_id": "R003",
+        "previous_value": null,
+        "new_value": "Digital-first marketing strategy",
+        "effective_date": "2023-07-01",
+        "description": "Marketing department restructured around digital channels"
+    },
+    {
+        "event_id": "E012",
+        "event_type": "reporting_change",
+        "entity_type": "role",
+        "entity_id": "R009",
+        "previous_value": "R008",
+        "new_value": "R003",
+        "effective_date": "2023-07-01",
+        "description": "Digital Marketing Lead now reports directly to VP Marketing"
+    },
+    {
+        "event_id": "E013",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P009",
+        "previous_value": null,
+        "new_value": "Senior Software Engineer",
+        "effective_date": "2022-07-01",
+        "description": "Jessica Liu joins as Senior Software Engineer"
+    },
+    {
+        "event_id": "E014",
+        "event_type": "departure",
+        "entity_type": "person",
+        "entity_id": "P008",
+        "previous_value": "Senior Software Engineer",
+        "new_value": null,
+        "effective_date": "2022-06-30",
+        "description": "Robert Nguyen departs the organisation"
+    },
+    {
+        "event_id": "E015",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P011",
+        "previous_value": null,
+        "new_value": "Financial Analyst",
+        "effective_date": "2020-06-01",
+        "description": "Maria Garcia hired as Financial Analyst"
+    },
+    {
+        "event_id": "E016",
+        "event_type": "departure",
+        "entity_type": "person",
+        "entity_id": "P011",
+        "previous_value": "Financial Analyst",
+        "new_value": null,
+        "effective_date": "2023-03-31",
+        "description": "Maria Garcia departs the organisation"
+    },
+    {
+        "event_id": "E017",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P012",
+        "previous_value": null,
+        "new_value": "Financial Analyst",
+        "effective_date": "2023-04-01",
+        "description": "Kevin O'Brien hired as Financial Analyst"
+    },
+    {
+        "event_id": "E018",
+        "event_type": "promotion",
+        "entity_type": "person",
+        "entity_id": "P009",
+        "previous_value": "Junior Engineer",
+        "new_value": "Senior Software Engineer",
+        "effective_date": "2022-07-01",
+        "description": "Jessica Liu promoted upon joining"
+    },
+    {
+        "event_id": "E019",
+        "event_type": "reporting_change",
+        "entity_type": "role",
+        "entity_id": "R006",
+        "previous_value": "R002",
+        "new_value": "R002",
+        "effective_date": "2021-06-01",
+        "description": "Engineering Manager reporting line confirmed after reorg"
+    },
+    {
+        "event_id": "E020",
+        "event_type": "hire",
+        "entity_type": "person",
+        "entity_id": "P004",
+        "previous_value": null,
+        "new_value": "VP Finance",
+        "effective_date": "2020-01-01",
+        "description": "James Rodriguez appointed as VP Finance"
+    },
+    {
+        "event_id": "E100",
+        "event_type": "promotion",
+        "entity_type": "person",
+        "entity_id": "P200",
+        "previous_value": "Analyst",
+        "new_value": "Senior Analyst",
+        "effective_date": "2023-01-15",
+        "description": "Promotion for non-existent person"
+    }
+]

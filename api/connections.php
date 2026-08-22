@@ -10,7 +10,7 @@
  *   ?type=person&id={person_id}   - Get connections for a person
  */
 
-require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/store.php';
 require_once __DIR__ . '/includes/helpers.php';
 
 header('Content-Type: application/json');
@@ -38,54 +38,104 @@ switch ($type) {
 }
 
 /**
- * Get connections for a role
+ * Get connections for a role.
  * Finds people who held this role and other roles they held,
  * plus temporally correlated events (within a 30-day window).
  */
 function handleRoleConnections($roleId) {
-    $pdo = getConnection();
+    $roles = storeRead('roles');
+    $events = storeRead('events');
+    $assignments = storeRead('role_assignments');
+    $people = storeRead('people');
 
     // Verify role exists
-    $stmt = $pdo->prepare("SELECT role_id, title, department FROM roles WHERE role_id = :id");
-    $stmt->execute([':id' => $roleId]);
-    $role = $stmt->fetch();
+    $role = null;
+    foreach ($roles as $r) {
+        if ($r['role_id'] === $roleId) {
+            $role = ['role_id' => $r['role_id'], 'title' => $r['title'], 'department' => $r['department']];
+            break;
+        }
+    }
 
     if (!$role) {
         errorResponse('Role not found', 404);
     }
 
-    // Get events for this role
-    $stmt = $pdo->prepare("
-        SELECT event_id, event_type, effective_date, description, previous_value, new_value
-        FROM events 
-        WHERE entity_type = 'role' AND entity_id = :id
-        ORDER BY effective_date ASC
-    ");
-    $stmt->execute([':id' => $roleId]);
-    $roleEvents = $stmt->fetchAll();
+    // Index people by person_id
+    $peopleMap = [];
+    foreach ($people as $p) {
+        $peopleMap[$p['person_id']] = $p['name'];
+    }
 
-    // Find temporally correlated events (events of other entities within 30-day window)
+    // Index roles by role_id
+    $rolesMap = [];
+    foreach ($roles as $r) {
+        $rolesMap[$r['role_id']] = $r['title'];
+    }
+
+    // Get events for this role
+    $roleEvents = [];
+    foreach ($events as $e) {
+        if ($e['entity_type'] === 'role' && $e['entity_id'] === $roleId) {
+            $roleEvents[] = [
+                'event_id'       => $e['event_id'],
+                'event_type'     => $e['event_type'],
+                'effective_date' => $e['effective_date'],
+                'description'    => $e['description'],
+                'previous_value' => $e['previous_value'],
+                'new_value'      => $e['new_value']
+            ];
+        }
+    }
+
+    // Sort by effective_date ASC
+    usort($roleEvents, function ($a, $b) {
+        return strcmp($a['effective_date'], $b['effective_date']);
+    });
+
+    // Find temporally correlated events (within 30-day window)
     $correlatedEvents = [];
     foreach ($roleEvents as $event) {
-        $stmt = $pdo->prepare("
-            SELECT e.event_id, e.event_type, e.entity_type, e.entity_id, 
-                   e.effective_date, e.description, e.previous_value, e.new_value,
-                   CASE 
-                       WHEN e.entity_type = 'role' THEN (SELECT title FROM roles WHERE role_id = e.entity_id)
-                       WHEN e.entity_type = 'person' THEN (SELECT name FROM people WHERE person_id = e.entity_id)
-                   END AS entity_name
-            FROM events e
-            WHERE e.entity_id != :entity_id
-              AND ABS(DATEDIFF(e.effective_date, :event_date)) <= 30
-            ORDER BY ABS(DATEDIFF(e.effective_date, :event_date2)) ASC
-            LIMIT 10
-        ");
-        $stmt->execute([
-            ':entity_id'  => $roleId,
-            ':event_date' => $event['effective_date'],
-            ':event_date2' => $event['effective_date']
-        ]);
-        $correlated = $stmt->fetchAll();
+        $eventDate = strtotime($event['effective_date']);
+        $correlated = [];
+
+        foreach ($events as $e) {
+            if ($e['entity_id'] === $roleId) continue; // Skip self
+
+            $otherDate = strtotime($e['effective_date']);
+            $daysDiff = abs(($otherDate - $eventDate) / 86400);
+
+            if ($daysDiff <= 30) {
+                // Get entity name
+                $entityName = null;
+                if ($e['entity_type'] === 'role' && isset($rolesMap[$e['entity_id']])) {
+                    $entityName = $rolesMap[$e['entity_id']];
+                } elseif ($e['entity_type'] === 'person' && isset($peopleMap[$e['entity_id']])) {
+                    $entityName = $peopleMap[$e['entity_id']];
+                }
+
+                $correlated[] = [
+                    'event_id'       => $e['event_id'],
+                    'event_type'     => $e['event_type'],
+                    'entity_type'    => $e['entity_type'],
+                    'entity_id'      => $e['entity_id'],
+                    'effective_date' => $e['effective_date'],
+                    'description'    => $e['description'],
+                    'previous_value' => $e['previous_value'],
+                    'new_value'      => $e['new_value'],
+                    'entity_name'    => $entityName
+                ];
+            }
+        }
+
+        // Sort by proximity (closest first), limit to 10
+        usort($correlated, function ($a, $b) use ($event) {
+            $eventDate = strtotime($event['effective_date']);
+            $diffA = abs(strtotime($a['effective_date']) - $eventDate);
+            $diffB = abs(strtotime($b['effective_date']) - $eventDate);
+            return $diffA - $diffB;
+        });
+        $correlated = array_slice($correlated, 0, 10);
 
         if (!empty($correlated)) {
             $correlatedEvents[] = [
@@ -96,28 +146,40 @@ function handleRoleConnections($roleId) {
     }
 
     // Get people connected to this role (occupants)
-    $stmt = $pdo->prepare("
-        SELECT ra.person_id, p.name, ra.start_date, ra.end_date
-        FROM role_assignments ra
-        JOIN people p ON p.person_id = ra.person_id
-        WHERE ra.role_id = :role_id
-        ORDER BY ra.start_date DESC
-    ");
-    $stmt->execute([':role_id' => $roleId]);
-    $connectedPeople = $stmt->fetchAll();
+    $connectedPeople = [];
+    foreach ($assignments as $a) {
+        if ($a['role_id'] === $roleId) {
+            $connectedPeople[] = [
+                'person_id'  => $a['person_id'],
+                'name'       => isset($peopleMap[$a['person_id']]) ? $peopleMap[$a['person_id']] : null,
+                'start_date' => $a['start_date'],
+                'end_date'   => $a['end_date']
+            ];
+        }
+    }
+
+    // Sort by start_date DESC
+    usort($connectedPeople, function ($a, $b) {
+        return strcmp($b['start_date'], $a['start_date']);
+    });
 
     // Get roles in the same department
     $relatedRoles = [];
     if ($role['department']) {
-        $stmt = $pdo->prepare("
-            SELECT role_id, title, department 
-            FROM roles 
-            WHERE department = :dept AND role_id != :role_id
-            ORDER BY title ASC
-            LIMIT 10
-        ");
-        $stmt->execute([':dept' => $role['department'], ':role_id' => $roleId]);
-        $relatedRoles = $stmt->fetchAll();
+        foreach ($roles as $r) {
+            if ($r['department'] === $role['department'] && $r['role_id'] !== $roleId) {
+                $relatedRoles[] = [
+                    'role_id'    => $r['role_id'],
+                    'title'      => $r['title'],
+                    'department' => $r['department']
+                ];
+            }
+        }
+        // Sort by title ASC, limit to 10
+        usort($relatedRoles, function ($a, $b) {
+            return strcmp($a['title'], $b['title']);
+        });
+        $relatedRoles = array_slice($relatedRoles, 0, 10);
     }
 
     jsonResponse([
@@ -131,54 +193,104 @@ function handleRoleConnections($roleId) {
 }
 
 /**
- * Get connections for a person
+ * Get connections for a person.
  * Finds roles they held, other people in those roles,
  * plus temporally correlated events (within a 30-day window).
  */
 function handlePersonConnections($personId) {
-    $pdo = getConnection();
+    $roles = storeRead('roles');
+    $events = storeRead('events');
+    $assignments = storeRead('role_assignments');
+    $people = storeRead('people');
 
     // Verify person exists
-    $stmt = $pdo->prepare("SELECT person_id, name FROM people WHERE person_id = :id");
-    $stmt->execute([':id' => $personId]);
-    $person = $stmt->fetch();
+    $person = null;
+    foreach ($people as $p) {
+        if ($p['person_id'] === $personId) {
+            $person = $p;
+            break;
+        }
+    }
 
     if (!$person) {
         errorResponse('Person not found', 404);
     }
 
+    // Index people by person_id
+    $peopleMap = [];
+    foreach ($people as $p) {
+        $peopleMap[$p['person_id']] = $p['name'];
+    }
+
+    // Index roles by role_id
+    $rolesMap = [];
+    foreach ($roles as $r) {
+        $rolesMap[$r['role_id']] = $r;
+    }
+
     // Get events for this person
-    $stmt = $pdo->prepare("
-        SELECT event_id, event_type, effective_date, description, previous_value, new_value
-        FROM events 
-        WHERE entity_type = 'person' AND entity_id = :id
-        ORDER BY effective_date ASC
-    ");
-    $stmt->execute([':id' => $personId]);
-    $personEvents = $stmt->fetchAll();
+    $personEvents = [];
+    foreach ($events as $e) {
+        if ($e['entity_type'] === 'person' && $e['entity_id'] === $personId) {
+            $personEvents[] = [
+                'event_id'       => $e['event_id'],
+                'event_type'     => $e['event_type'],
+                'effective_date' => $e['effective_date'],
+                'description'    => $e['description'],
+                'previous_value' => $e['previous_value'],
+                'new_value'      => $e['new_value']
+            ];
+        }
+    }
+
+    // Sort by effective_date ASC
+    usort($personEvents, function ($a, $b) {
+        return strcmp($a['effective_date'], $b['effective_date']);
+    });
 
     // Find temporally correlated events (within 30-day window)
     $correlatedEvents = [];
     foreach ($personEvents as $event) {
-        $stmt = $pdo->prepare("
-            SELECT e.event_id, e.event_type, e.entity_type, e.entity_id, 
-                   e.effective_date, e.description, e.previous_value, e.new_value,
-                   CASE 
-                       WHEN e.entity_type = 'role' THEN (SELECT title FROM roles WHERE role_id = e.entity_id)
-                       WHEN e.entity_type = 'person' THEN (SELECT name FROM people WHERE person_id = e.entity_id)
-                   END AS entity_name
-            FROM events e
-            WHERE e.entity_id != :entity_id
-              AND ABS(DATEDIFF(e.effective_date, :event_date)) <= 30
-            ORDER BY ABS(DATEDIFF(e.effective_date, :event_date2)) ASC
-            LIMIT 10
-        ");
-        $stmt->execute([
-            ':entity_id'  => $personId,
-            ':event_date' => $event['effective_date'],
-            ':event_date2' => $event['effective_date']
-        ]);
-        $correlated = $stmt->fetchAll();
+        $eventDate = strtotime($event['effective_date']);
+        $correlated = [];
+
+        foreach ($events as $e) {
+            if ($e['entity_id'] === $personId) continue; // Skip self
+
+            $otherDate = strtotime($e['effective_date']);
+            $daysDiff = abs(($otherDate - $eventDate) / 86400);
+
+            if ($daysDiff <= 30) {
+                // Get entity name
+                $entityName = null;
+                if ($e['entity_type'] === 'role' && isset($rolesMap[$e['entity_id']])) {
+                    $entityName = $rolesMap[$e['entity_id']]['title'];
+                } elseif ($e['entity_type'] === 'person' && isset($peopleMap[$e['entity_id']])) {
+                    $entityName = $peopleMap[$e['entity_id']];
+                }
+
+                $correlated[] = [
+                    'event_id'       => $e['event_id'],
+                    'event_type'     => $e['event_type'],
+                    'entity_type'    => $e['entity_type'],
+                    'entity_id'      => $e['entity_id'],
+                    'effective_date' => $e['effective_date'],
+                    'description'    => $e['description'],
+                    'previous_value' => $e['previous_value'],
+                    'new_value'      => $e['new_value'],
+                    'entity_name'    => $entityName
+                ];
+            }
+        }
+
+        // Sort by proximity, limit to 10
+        usort($correlated, function ($a, $b) use ($event) {
+            $eventDate = strtotime($event['effective_date']);
+            $diffA = abs(strtotime($a['effective_date']) - $eventDate);
+            $diffB = abs(strtotime($b['effective_date']) - $eventDate);
+            return $diffA - $diffB;
+        });
+        $correlated = array_slice($correlated, 0, 10);
 
         if (!empty($correlated)) {
             $correlatedEvents[] = [
@@ -189,31 +301,47 @@ function handlePersonConnections($personId) {
     }
 
     // Get roles connected to this person
-    $stmt = $pdo->prepare("
-        SELECT ra.role_id, r.title, r.department, ra.start_date, ra.end_date
-        FROM role_assignments ra
-        JOIN roles r ON r.role_id = ra.role_id
-        WHERE ra.person_id = :person_id
-        ORDER BY ra.start_date DESC
-    ");
-    $stmt->execute([':person_id' => $personId]);
-    $connectedRoles = $stmt->fetchAll();
+    $connectedRoles = [];
+    foreach ($assignments as $a) {
+        if ($a['person_id'] === $personId) {
+            $roleInfo = isset($rolesMap[$a['role_id']]) ? $rolesMap[$a['role_id']] : null;
+            $connectedRoles[] = [
+                'role_id'    => $a['role_id'],
+                'title'      => $roleInfo ? $roleInfo['title'] : null,
+                'department' => $roleInfo ? $roleInfo['department'] : null,
+                'start_date' => $a['start_date'],
+                'end_date'   => $a['end_date']
+            ];
+        }
+    }
+
+    // Sort by start_date DESC
+    usort($connectedRoles, function ($a, $b) {
+        return strcmp($b['start_date'], $a['start_date']);
+    });
 
     // Get other people who held the same roles
     $relatedPeople = [];
     foreach ($connectedRoles as $role) {
-        $stmt = $pdo->prepare("
-            SELECT ra.person_id, p.name, ra.start_date, ra.end_date
-            FROM role_assignments ra
-            JOIN people p ON p.person_id = ra.person_id
-            WHERE ra.role_id = :role_id AND ra.person_id != :person_id
-            ORDER BY ra.start_date DESC
-            LIMIT 5
-        ");
-        $stmt->execute([':role_id' => $role['role_id'], ':person_id' => $personId]);
-        $others = $stmt->fetchAll();
+        $others = [];
+        foreach ($assignments as $a) {
+            if ($a['role_id'] === $role['role_id'] && $a['person_id'] !== $personId) {
+                $others[] = [
+                    'person_id'  => $a['person_id'],
+                    'name'       => isset($peopleMap[$a['person_id']]) ? $peopleMap[$a['person_id']] : null,
+                    'start_date' => $a['start_date'],
+                    'end_date'   => $a['end_date']
+                ];
+            }
+        }
 
         if (!empty($others)) {
+            // Sort by start_date DESC, limit to 5
+            usort($others, function ($a, $b) {
+                return strcmp($b['start_date'], $a['start_date']);
+            });
+            $others = array_slice($others, 0, 5);
+
             $relatedPeople[] = [
                 'via_role' => $role['title'],
                 'role_id'  => $role['role_id'],

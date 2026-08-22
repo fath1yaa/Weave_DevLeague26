@@ -1,0 +1,86 @@
+[
+    {
+        "person_id": "P001",
+        "role_id": "R001",
+        "start_date": "2020-01-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P002",
+        "role_id": "R002",
+        "start_date": "2020-01-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P003",
+        "role_id": "R003",
+        "start_date": "2020-01-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P004",
+        "role_id": "R004",
+        "start_date": "2020-01-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P005",
+        "role_id": "R005",
+        "start_date": "2020-03-15",
+        "end_date": null
+    },
+    {
+        "person_id": "P006",
+        "role_id": "R006",
+        "start_date": "2020-01-01",
+        "end_date": "2022-12-31"
+    },
+    {
+        "person_id": "P007",
+        "role_id": "R006",
+        "start_date": "2023-01-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P008",
+        "role_id": "R007",
+        "start_date": "2020-02-01",
+        "end_date": "2022-06-30"
+    },
+    {
+        "person_id": "P009",
+        "role_id": "R007",
+        "start_date": "2022-07-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P010",
+        "role_id": "R008",
+        "start_date": "2020-01-01",
+        "end_date": "2023-06-30"
+    },
+    {
+        "person_id": "P010",
+        "role_id": "R009",
+        "start_date": "2023-07-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P011",
+        "role_id": "R010",
+        "start_date": "2020-06-01",
+        "end_date": "2023-03-31"
+    },
+    {
+        "person_id": "P012",
+        "role_id": "R010",
+        "start_date": "2023-04-01",
+        "end_date": null
+    },
+    {
+        "person_id": "P013",
+        "role_id": "R999",
+        "start_date": "2022-01-01",
+        "end_date": null
+    }
+]

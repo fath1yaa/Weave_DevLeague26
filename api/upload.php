@@ -3,11 +3,11 @@
  * CSV Upload API Endpoint - Weave Application
  * 
  * Handles multipart form POST uploads for roles_csv, people_csv, and events_csv.
- * Validates files, parses CSV content, stores valid records in MySQL,
- * flags invalid rows into the flagged_records table, and returns a JSON summary.
+ * Validates files, parses CSV content, stores valid records in JSON files,
+ * flags invalid rows into flagged_records.json, and returns a JSON summary.
  */
 
-require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/store.php';
 require_once __DIR__ . '/includes/csv-parser.php';
 require_once __DIR__ . '/includes/validator.php';
 require_once __DIR__ . '/includes/helpers.php';
@@ -60,9 +60,6 @@ $summary = [
 
 $errors = [];
 
-// Get database connection
-$pdo = getConnection();
-
 // Process each file field
 foreach ($fileFields as $field) {
     if (!isset($_FILES[$field]) || $_FILES[$field]['error'] === UPLOAD_ERR_NO_FILE) {
@@ -86,7 +83,6 @@ foreach ($fileFields as $field) {
     // Validate MIME type
     $mimeType = $file['type'];
     if (!in_array($mimeType, $allowedMimeTypes)) {
-        // Also check with finfo for more reliable detection
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $detectedMime = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
@@ -108,31 +104,27 @@ foreach ($fileFields as $field) {
     $parseResult = parseCSVFile($file['tmp_name'], $fileType);
 
     if (!$parseResult['valid']) {
-        // Return parsing errors (e.g., missing headers)
         errorResponse(implode('; ', $parseResult['errors']), 400);
     }
 
     // Process rows based on file type
     switch ($fileType) {
         case 'roles':
-            $result = processRolesFile($pdo, $parseResult['rows'], $summary, $fileType);
-            $summary = $result;
+            $summary = processRolesFile($parseResult['rows'], $summary, $fileType);
             break;
 
         case 'people':
-            $result = processPeopleFile($pdo, $parseResult['rows'], $summary, $fileType);
-            $summary = $result;
+            $summary = processPeopleFile($parseResult['rows'], $summary, $fileType);
             break;
 
         case 'events':
-            $result = processEventsFile($pdo, $parseResult['rows'], $summary, $fileType);
-            $summary = $result;
+            $summary = processEventsFile($parseResult['rows'], $summary, $fileType);
             break;
     }
 }
 
 // Perform cross-file reference matching after all files are processed
-performCrossFileMatching($pdo, $summary);
+performCrossFileMatching($summary);
 
 // Return success response with summary
 jsonResponse([
@@ -145,230 +137,196 @@ jsonResponse([
 // ============================================================
 
 /**
- * Processes roles CSV rows: validates, inserts valid records, flags invalid ones.
- *
- * @param PDO   $pdo      Database connection.
- * @param array $rows     Parsed CSV rows.
- * @param array $summary  Current summary counts.
- * @param string $fileType The file type identifier.
- * @return array Updated summary counts.
+ * Processes roles CSV rows: validates, appends valid records, flags invalid ones.
  */
-function processRolesFile($pdo, $rows, $summary, $fileType) {
-    $pdo->beginTransaction();
+function processRolesFile($rows, $summary, $fileType) {
+    $roles = storeRead('roles');
+    $existingIds = array_column($roles, 'role_id');
 
-    try {
-        $insertStmt = $pdo->prepare(
-            "INSERT IGNORE INTO roles (role_id, title, department, reports_to, effective_from, effective_to) 
-             VALUES (?, ?, ?, ?, ?, ?)"
-        );
+    foreach ($rows as $row) {
+        $rowNumber = $row['_row_number'];
+        $validation = validateRow($row, 'roles', $rowNumber);
 
-        $flagStmt = $pdo->prepare(
-            "INSERT INTO flagged_records (source_file, row_number, issue_type, issue_description, original_data) 
-             VALUES (?, ?, ?, ?, ?)"
-        );
-
-        foreach ($rows as $row) {
-            $rowNumber = $row['_row_number'];
-            $validation = validateRow($row, 'roles', $rowNumber);
-
-            if ($validation['valid']) {
-                $effectiveTo = (!empty(trim($row['effective_to'] ?? ''))) ? $row['effective_to'] : null;
-                $reportsTo = (!empty(trim($row['reports_to'] ?? ''))) ? $row['reports_to'] : null;
-
-                $insertStmt->execute([
-                    $row['role_id'],
-                    $row['title'],
-                    $row['department'],
-                    $reportsTo,
-                    $row['effective_from'],
-                    $effectiveTo
-                ]);
-
-                if ($insertStmt->rowCount() > 0) {
-                    $summary['roles_imported']++;
-                }
-            } else {
-                // Flag the invalid row
-                $issueType = determineIssueType($validation['errors']);
-                $issueDescription = implode('; ', $validation['errors']);
-                $originalData = json_encode(array_filter($row, function($key) {
-                    return $key !== '_row_number';
-                }, ARRAY_FILTER_USE_KEY));
-
-                $flagStmt->execute([
-                    'roles.csv',
-                    $rowNumber,
-                    $issueType,
-                    $issueDescription,
-                    $originalData
-                ]);
-
-                $summary['flagged']++;
+        if ($validation['valid']) {
+            // Skip duplicates (INSERT IGNORE equivalent)
+            if (in_array($row['role_id'], $existingIds)) {
+                continue;
             }
-        }
 
-        $pdo->commit();
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        errorResponse('Database error while processing roles: ' . $e->getMessage(), 500);
+            $effectiveTo = (!empty(trim($row['effective_to'] ?? ''))) ? $row['effective_to'] : null;
+            $reportsTo = (!empty(trim($row['reports_to'] ?? ''))) ? $row['reports_to'] : null;
+
+            $roles[] = [
+                'role_id'        => $row['role_id'],
+                'title'          => $row['title'],
+                'department'     => $row['department'],
+                'reports_to'     => $reportsTo,
+                'effective_from' => $row['effective_from'],
+                'effective_to'   => $effectiveTo
+            ];
+            $existingIds[] = $row['role_id'];
+            $summary['roles_imported']++;
+        } else {
+            // Flag the invalid row
+            $issueType = determineIssueType($validation['errors']);
+            $issueDescription = implode('; ', $validation['errors']);
+            $originalData = array_filter($row, function($key) {
+                return $key !== '_row_number';
+            }, ARRAY_FILTER_USE_KEY);
+
+            storeAppend('flagged_records', [
+                'source_file'       => 'roles.csv',
+                'row_number'        => $rowNumber,
+                'issue_type'        => $issueType,
+                'issue_description' => $issueDescription,
+                'original_data'     => $originalData,
+                'resolved'          => false,
+                'resolved_at'       => null,
+                'created_at'        => date('Y-m-d H:i:s')
+            ]);
+
+            $summary['flagged']++;
+        }
     }
 
+    storeWrite('roles', $roles);
     return $summary;
 }
 
 /**
- * Processes people CSV rows: validates, inserts valid records into people and role_assignments,
+ * Processes people CSV rows: validates, appends valid records to people and role_assignments,
  * flags invalid ones.
- *
- * @param PDO   $pdo      Database connection.
- * @param array $rows     Parsed CSV rows.
- * @param array $summary  Current summary counts.
- * @param string $fileType The file type identifier.
- * @return array Updated summary counts.
  */
-function processPeopleFile($pdo, $rows, $summary, $fileType) {
-    $pdo->beginTransaction();
+function processPeopleFile($rows, $summary, $fileType) {
+    $people = storeRead('people');
+    $assignments = storeRead('role_assignments');
+    $existingPersonIds = array_column($people, 'person_id');
 
-    try {
-        $insertPersonStmt = $pdo->prepare(
-            "INSERT IGNORE INTO people (person_id, name) VALUES (?, ?)"
-        );
+    foreach ($rows as $row) {
+        $rowNumber = $row['_row_number'];
+        $validation = validateRow($row, 'people', $rowNumber);
 
-        $insertAssignmentStmt = $pdo->prepare(
-            "INSERT IGNORE INTO role_assignments (person_id, role_id, start_date, end_date) 
-             VALUES (?, ?, ?, ?)"
-        );
+        if ($validation['valid']) {
+            $endDate = (!empty(trim($row['end_date'] ?? ''))) ? $row['end_date'] : null;
+            $imported = false;
 
-        $flagStmt = $pdo->prepare(
-            "INSERT INTO flagged_records (source_file, row_number, issue_type, issue_description, original_data) 
-             VALUES (?, ?, ?, ?, ?)"
-        );
-
-        foreach ($rows as $row) {
-            $rowNumber = $row['_row_number'];
-            $validation = validateRow($row, 'people', $rowNumber);
-
-            if ($validation['valid']) {
-                $endDate = (!empty(trim($row['end_date'] ?? ''))) ? $row['end_date'] : null;
-
-                // Insert person
-                $insertPersonStmt->execute([
-                    $row['person_id'],
-                    $row['name']
-                ]);
-
-                // Insert role assignment
-                $insertAssignmentStmt->execute([
-                    $row['person_id'],
-                    $row['role_id'],
-                    $row['start_date'],
-                    $endDate
-                ]);
-
-                if ($insertPersonStmt->rowCount() > 0 || $insertAssignmentStmt->rowCount() > 0) {
-                    $summary['people_imported']++;
-                }
-            } else {
-                // Flag the invalid row
-                $issueType = determineIssueType($validation['errors']);
-                $issueDescription = implode('; ', $validation['errors']);
-                $originalData = json_encode(array_filter($row, function($key) {
-                    return $key !== '_row_number';
-                }, ARRAY_FILTER_USE_KEY));
-
-                $flagStmt->execute([
-                    'people.csv',
-                    $rowNumber,
-                    $issueType,
-                    $issueDescription,
-                    $originalData
-                ]);
-
-                $summary['flagged']++;
+            // Insert person if not exists
+            if (!in_array($row['person_id'], $existingPersonIds)) {
+                $people[] = [
+                    'person_id' => $row['person_id'],
+                    'name'      => $row['name']
+                ];
+                $existingPersonIds[] = $row['person_id'];
+                $imported = true;
             }
-        }
 
-        $pdo->commit();
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        errorResponse('Database error while processing people: ' . $e->getMessage(), 500);
+            // Check for duplicate assignment
+            $assignmentExists = false;
+            foreach ($assignments as $a) {
+                if ($a['person_id'] === $row['person_id'] && $a['role_id'] === $row['role_id'] && $a['start_date'] === $row['start_date']) {
+                    $assignmentExists = true;
+                    break;
+                }
+            }
+
+            if (!$assignmentExists) {
+                $assignments[] = [
+                    'person_id'  => $row['person_id'],
+                    'role_id'    => $row['role_id'],
+                    'start_date' => $row['start_date'],
+                    'end_date'   => $endDate
+                ];
+                $imported = true;
+            }
+
+            if ($imported) {
+                $summary['people_imported']++;
+            }
+        } else {
+            // Flag the invalid row
+            $issueType = determineIssueType($validation['errors']);
+            $issueDescription = implode('; ', $validation['errors']);
+            $originalData = array_filter($row, function($key) {
+                return $key !== '_row_number';
+            }, ARRAY_FILTER_USE_KEY);
+
+            storeAppend('flagged_records', [
+                'source_file'       => 'people.csv',
+                'row_number'        => $rowNumber,
+                'issue_type'        => $issueType,
+                'issue_description' => $issueDescription,
+                'original_data'     => $originalData,
+                'resolved'          => false,
+                'resolved_at'       => null,
+                'created_at'        => date('Y-m-d H:i:s')
+            ]);
+
+            $summary['flagged']++;
+        }
     }
 
+    storeWrite('people', $people);
+    storeWrite('role_assignments', $assignments);
     return $summary;
 }
 
 /**
- * Processes events CSV rows: validates, inserts valid records, flags invalid ones.
- *
- * @param PDO   $pdo      Database connection.
- * @param array $rows     Parsed CSV rows.
- * @param array $summary  Current summary counts.
- * @param string $fileType The file type identifier.
- * @return array Updated summary counts.
+ * Processes events CSV rows: validates, appends valid records, flags invalid ones.
  */
-function processEventsFile($pdo, $rows, $summary, $fileType) {
-    $pdo->beginTransaction();
+function processEventsFile($rows, $summary, $fileType) {
+    $events = storeRead('events');
+    $existingIds = array_column($events, 'event_id');
 
-    try {
-        $insertStmt = $pdo->prepare(
-            "INSERT IGNORE INTO events (event_id, event_type, entity_type, entity_id, previous_value, new_value, effective_date, description) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        );
+    foreach ($rows as $row) {
+        $rowNumber = $row['_row_number'];
+        $validation = validateRow($row, 'events', $rowNumber);
 
-        $flagStmt = $pdo->prepare(
-            "INSERT INTO flagged_records (source_file, row_number, issue_type, issue_description, original_data) 
-             VALUES (?, ?, ?, ?, ?)"
-        );
-
-        foreach ($rows as $row) {
-            $rowNumber = $row['_row_number'];
-            $validation = validateRow($row, 'events', $rowNumber);
-
-            if ($validation['valid']) {
-                $previousValue = (!empty(trim($row['previous_value'] ?? ''))) ? $row['previous_value'] : null;
-                $newValue = (!empty(trim($row['new_value'] ?? ''))) ? $row['new_value'] : null;
-                $description = (!empty(trim($row['description'] ?? ''))) ? $row['description'] : null;
-
-                $insertStmt->execute([
-                    $row['event_id'],
-                    strtolower(trim($row['event_type'])),
-                    strtolower(trim($row['entity_type'])),
-                    $row['entity_id'],
-                    $previousValue,
-                    $newValue,
-                    $row['effective_date'],
-                    $description
-                ]);
-
-                if ($insertStmt->rowCount() > 0) {
-                    $summary['events_imported']++;
-                }
-            } else {
-                // Flag the invalid row
-                $issueType = determineIssueType($validation['errors']);
-                $issueDescription = implode('; ', $validation['errors']);
-                $originalData = json_encode(array_filter($row, function($key) {
-                    return $key !== '_row_number';
-                }, ARRAY_FILTER_USE_KEY));
-
-                $flagStmt->execute([
-                    'events.csv',
-                    $rowNumber,
-                    $issueType,
-                    $issueDescription,
-                    $originalData
-                ]);
-
-                $summary['flagged']++;
+        if ($validation['valid']) {
+            // Skip duplicates
+            if (in_array($row['event_id'], $existingIds)) {
+                continue;
             }
-        }
 
-        $pdo->commit();
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        errorResponse('Database error while processing events: ' . $e->getMessage(), 500);
+            $previousValue = (!empty(trim($row['previous_value'] ?? ''))) ? $row['previous_value'] : null;
+            $newValue = (!empty(trim($row['new_value'] ?? ''))) ? $row['new_value'] : null;
+            $description = (!empty(trim($row['description'] ?? ''))) ? $row['description'] : null;
+
+            $events[] = [
+                'event_id'       => $row['event_id'],
+                'event_type'     => strtolower(trim($row['event_type'])),
+                'entity_type'    => strtolower(trim($row['entity_type'])),
+                'entity_id'      => $row['entity_id'],
+                'previous_value' => $previousValue,
+                'new_value'      => $newValue,
+                'effective_date' => $row['effective_date'],
+                'description'    => $description
+            ];
+            $existingIds[] = $row['event_id'];
+            $summary['events_imported']++;
+        } else {
+            // Flag the invalid row
+            $issueType = determineIssueType($validation['errors']);
+            $issueDescription = implode('; ', $validation['errors']);
+            $originalData = array_filter($row, function($key) {
+                return $key !== '_row_number';
+            }, ARRAY_FILTER_USE_KEY);
+
+            storeAppend('flagged_records', [
+                'source_file'       => 'events.csv',
+                'row_number'        => $rowNumber,
+                'issue_type'        => $issueType,
+                'issue_description' => $issueDescription,
+                'original_data'     => $originalData,
+                'resolved'          => false,
+                'resolved_at'       => null,
+                'created_at'        => date('Y-m-d H:i:s')
+            ]);
+
+            $summary['flagged']++;
+        }
     }
 
+    storeWrite('events', $events);
     return $summary;
 }
 
@@ -380,79 +338,85 @@ function processEventsFile($pdo, $rows, $summary, $fileType) {
  * Performs cross-file reference matching after all files have been processed.
  * Checks that person role_id references exist in roles, and event entity_ids
  * exist in corresponding entity tables. Flags unmatched references.
- *
- * @param PDO   $pdo     Database connection.
- * @param array &$summary Summary counts (passed by reference to increment flagged count).
- * @return void
  */
-function performCrossFileMatching($pdo, &$summary) {
-    try {
-        // 1. Check people whose role_id does not exist in the roles table
-        $unmatchedPeopleStmt = $pdo->query(
-            "SELECT ra.person_id, ra.role_id, ra.start_date, p.name 
-             FROM role_assignments ra
-             JOIN people p ON p.person_id = ra.person_id
-             LEFT JOIN roles r ON r.role_id = ra.role_id
-             WHERE r.role_id IS NULL"
-        );
+function performCrossFileMatching(&$summary) {
+    $roles = storeRead('roles');
+    $people = storeRead('people');
+    $assignments = storeRead('role_assignments');
+    $events = storeRead('events');
 
-        $flagStmt = $pdo->prepare(
-            "INSERT INTO flagged_records (source_file, row_number, issue_type, issue_description, original_data) 
-             VALUES (?, ?, 'unmatched_reference', ?, ?)"
-        );
+    $roleIds = array_column($roles, 'role_id');
+    $personIds = array_column($people, 'person_id');
 
-        $unmatchedPeople = $unmatchedPeopleStmt->fetchAll();
-        foreach ($unmatchedPeople as $index => $row) {
-            $issueDescription = "role_id '{$row['role_id']}' not found in roles";
-            $originalData = json_encode([
-                'person_id' => $row['person_id'],
-                'name' => $row['name'],
-                'role_id' => $row['role_id']
-            ]);
+    // 1. Check people whose role_id does not exist in the roles table
+    foreach ($assignments as $assignment) {
+        if (!in_array($assignment['role_id'], $roleIds)) {
+            // Find the person name
+            $personName = '';
+            foreach ($people as $p) {
+                if ($p['person_id'] === $assignment['person_id']) {
+                    $personName = $p['name'];
+                    break;
+                }
+            }
 
-            $flagStmt->execute([
-                'people.csv',
-                0, // row_number unknown for cross-file checks
-                $issueDescription,
-                $originalData
-            ]);
+            $issueDescription = "role_id '{$assignment['role_id']}' not found in roles";
+            $originalData = [
+                'person_id' => $assignment['person_id'],
+                'name'      => $personName,
+                'role_id'   => $assignment['role_id']
+            ];
 
-            $summary['flagged']++;
-        }
-
-        // 2. Check events whose entity_id does not exist in the corresponding entity table
-        $unmatchedEventsStmt = $pdo->query(
-            "SELECT e.event_id, e.entity_type, e.entity_id, e.event_type
-             FROM events e
-             LEFT JOIN roles r ON e.entity_type = 'role' AND e.entity_id = r.role_id
-             LEFT JOIN people p ON e.entity_type = 'person' AND e.entity_id = p.person_id
-             WHERE (e.entity_type = 'role' AND r.role_id IS NULL)
-                OR (e.entity_type = 'person' AND p.person_id IS NULL)"
-        );
-
-        $unmatchedEvents = $unmatchedEventsStmt->fetchAll();
-        foreach ($unmatchedEvents as $index => $row) {
-            $entityTable = $row['entity_type'] === 'role' ? 'roles' : 'people';
-            $issueDescription = "entity_id '{$row['entity_id']}' not found in {$entityTable}";
-            $originalData = json_encode([
-                'event_id' => $row['event_id'],
-                'entity_type' => $row['entity_type'],
-                'entity_id' => $row['entity_id']
-            ]);
-
-            $flagStmt->execute([
-                'events.csv',
-                0, // row_number unknown for cross-file checks
-                $issueDescription,
-                $originalData
+            storeAppend('flagged_records', [
+                'source_file'       => 'people.csv',
+                'row_number'        => 0,
+                'issue_type'        => 'unmatched_reference',
+                'issue_description' => $issueDescription,
+                'original_data'     => $originalData,
+                'resolved'          => false,
+                'resolved_at'       => null,
+                'created_at'        => date('Y-m-d H:i:s')
             ]);
 
             $summary['flagged']++;
         }
+    }
 
-    } catch (Exception $e) {
-        // Cross-file matching errors are non-fatal; log but don't halt the response
-        error_log('Cross-file matching error: ' . $e->getMessage());
+    // 2. Check events whose entity_id does not exist in the corresponding entity table
+    foreach ($events as $event) {
+        $entityType = $event['entity_type'];
+        $entityId = $event['entity_id'];
+        $unmatched = false;
+
+        if ($entityType === 'role' && !in_array($entityId, $roleIds)) {
+            $unmatched = true;
+            $entityTable = 'roles';
+        } elseif ($entityType === 'person' && !in_array($entityId, $personIds)) {
+            $unmatched = true;
+            $entityTable = 'people';
+        }
+
+        if ($unmatched) {
+            $issueDescription = "entity_id '$entityId' not found in $entityTable";
+            $originalData = [
+                'event_id'    => $event['event_id'],
+                'entity_type' => $event['entity_type'],
+                'entity_id'   => $event['entity_id']
+            ];
+
+            storeAppend('flagged_records', [
+                'source_file'       => 'events.csv',
+                'row_number'        => 0,
+                'issue_type'        => 'unmatched_reference',
+                'issue_description' => $issueDescription,
+                'original_data'     => $originalData,
+                'resolved'          => false,
+                'resolved_at'       => null,
+                'created_at'        => date('Y-m-d H:i:s')
+            ]);
+
+            $summary['flagged']++;
+        }
     }
 }
 
@@ -462,9 +426,6 @@ function performCrossFileMatching($pdo, &$summary) {
 
 /**
  * Determines the issue_type ENUM value based on validation error messages.
- *
- * @param array $errors Array of error message strings.
- * @return string One of 'missing_field', 'date_conflict', 'unmatched_reference', 'duplicate'.
  */
 function determineIssueType($errors) {
     $errorStr = implode(' ', $errors);
@@ -485,15 +446,11 @@ function determineIssueType($errors) {
         return 'duplicate';
     }
 
-    // Default to missing_field for any other validation error
     return 'missing_field';
 }
 
 /**
  * Returns a human-readable message for PHP file upload error codes.
- *
- * @param int $errorCode The PHP upload error code.
- * @return string Human-readable error message.
  */
 function getUploadErrorMessage($errorCode) {
     $messages = [

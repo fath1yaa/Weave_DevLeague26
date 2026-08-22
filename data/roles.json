@@ -1,0 +1,12 @@
+[
+  {"role_id":"R001","title":"Chief Executive Officer","department":"Executive","reports_to":null,"effective_from":"2020-01-01","effective_to":null},
+  {"role_id":"R002","title":"VP Engineering","department":"Engineering","reports_to":"R001","effective_from":"2020-01-01","effective_to":null},
+  {"role_id":"R003","title":"VP Marketing","department":"Marketing","reports_to":"R001","effective_from":"2020-01-01","effective_to":null},
+  {"role_id":"R004","title":"VP Finance","department":"Finance","reports_to":"R001","effective_from":"2020-01-01","effective_to":null},
+  {"role_id":"R005","title":"VP Operations","department":"Operations","reports_to":"R001","effective_from":"2020-03-15","effective_to":null},
+  {"role_id":"R006","title":"Engineering Manager","department":"Engineering","reports_to":"R002","effective_from":"2020-01-01","effective_to":null},
+  {"role_id":"R007","title":"Senior Software Engineer","department":"Engineering","reports_to":"R006","effective_from":"2020-02-01","effective_to":null},
+  {"role_id":"R008","title":"Marketing Manager","department":"Marketing","reports_to":"R003","effective_from":"2020-01-01","effective_to":"2023-06-30"},
+  {"role_id":"R009","title":"Digital Marketing Lead","department":"Marketing","reports_to":"R003","effective_from":"2023-07-01","effective_to":null},
+  {"role_id":"R010","title":"Financial Analyst","department":"Finance","reports_to":"R004","effective_from":"2020-06-01","effective_to":null}
+]
