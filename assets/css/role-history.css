@@ -9,12 +9,13 @@
 
 .search-wrapper {
     position: relative;
-    max-width: 600px;
+    max-width: 100%;
 }
 
 .search-input {
     padding-left: var(--spacing-lg);
     font-size: var(--font-size-lg);
+    border-width: 2px;
 }
 
 .search-dropdown {
