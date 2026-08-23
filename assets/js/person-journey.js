@@ -90,7 +90,7 @@ const PersonJourney = (() => {
         }
 
         try {
-            const data = await API.get(`people.php?action=search&q=${encodeURIComponent(query)}`);
+            const data = await API.get(`people.js?action=search&q=${encodeURIComponent(query)}`);
             if (data.success && data.results.length > 0) {
                 renderSearchResults(data.results);
                 showDropdown();
@@ -195,7 +195,7 @@ const PersonJourney = (() => {
         hideDetail();
 
         try {
-            const data = await API.get(`people.php?action=journey&person_id=${encodeURIComponent(personId)}`);
+            const data = await API.get(`people.js?action=journey&person_id=${encodeURIComponent(personId)}`);
             if (data.success) {
                 renderPersonHeader(data.person, data.current_role);
                 renderCareerPath(data.assignments);
@@ -326,7 +326,7 @@ const PersonJourney = (() => {
         if (!grid) return;
 
         try {
-            const data = await API.get('people.php?action=list');
+            const data = await API.get('people.js?action=list');
             if (data.success && data.results.length > 0) {
                 renderPeople(grid, data.results);
             } else {

@@ -116,8 +116,8 @@ const DataQuality = (() => {
         try {
             // Fetch stats and records in parallel
             const [statsData, recordsData] = await Promise.all([
-                API.get('dataquality.php?action=stats'),
-                API.get('dataquality.php?action=list')
+                API.get('dataquality.js?action=stats'),
+                API.get('dataquality.js?action=list')
             ]);
 
             stats = statsData;
@@ -601,7 +601,7 @@ const DataQuality = (() => {
         }
 
         try {
-            const response = await API.put(`dataquality.php?action=resolve&flag_id=${flagId}`, {
+            const response = await API.put(`dataquality.js?action=resolve&flag_id=${flagId}`, {
                 resolved_data: resolvedData
             });
 

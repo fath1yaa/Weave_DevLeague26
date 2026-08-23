@@ -17,7 +17,7 @@ const Auth = (() => {
      */
     function getAuthUrl(action) {
         const basePath = typeof Nav !== 'undefined' ? Nav.getBasePath() : '../';
-        return basePath + 'api/auth.php?action=' + action;
+        return basePath + 'api/auth.js?action=' + action;
     }
 
     /**

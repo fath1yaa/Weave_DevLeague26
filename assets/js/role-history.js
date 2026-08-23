@@ -93,7 +93,7 @@ const RoleHistory = (() => {
         }
 
         try {
-            const data = await API.get(`roles.php?action=search&q=${encodeURIComponent(query)}`);
+            const data = await API.get(`roles.js?action=search&q=${encodeURIComponent(query)}`);
             if (data.success && data.results.length > 0) {
                 renderSearchResults(data.results);
                 showDropdown();
@@ -197,7 +197,7 @@ const RoleHistory = (() => {
         hideDetail();
 
         try {
-            const data = await API.get(`roles.php?action=history&role_id=${encodeURIComponent(roleId)}`);
+            const data = await API.get(`roles.js?action=history&role_id=${encodeURIComponent(roleId)}`);
             if (data.success) {
                 renderRoleDetail(data.role);
                 renderTimeline(data.events);
@@ -336,7 +336,7 @@ const RoleHistory = (() => {
         if (!grid) return;
 
         try {
-            const data = await API.get('roles.php?action=departments');
+            const data = await API.get('roles.js?action=departments');
             if (data.success && data.departments.length > 0) {
                 renderDepartments(grid, data.departments);
             } else {

@@ -39,7 +39,7 @@ const ConnectionView = (() => {
         `;
 
         try {
-            const data = await API.get(`connections.php?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`);
+            const data = await API.get(`connections.js?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`);
             if (data.success) {
                 renderConnections(container, data);
             } else {

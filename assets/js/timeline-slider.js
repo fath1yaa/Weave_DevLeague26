@@ -52,7 +52,7 @@ const TimelineSlider = (() => {
 
         // Fetch date range from API
         try {
-            const data = await API.get('orgchart.php?action=date_range');
+            const data = await API.get('orgchart.js?action=date_range');
             if (data.success && data.date_range) {
                 minDate = new Date(data.date_range.min + 'T00:00:00');
                 maxDate = new Date(data.date_range.max + 'T00:00:00');

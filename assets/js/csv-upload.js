@@ -11,7 +11,7 @@ const CSVUpload = (() => {
     // Configuration
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
     const ALLOWED_EXTENSION = '.csv';
-    const UPLOAD_ENDPOINT = '../api/upload.php';
+    const UPLOAD_ENDPOINT = '../api/upload.js';
 
     // File type definitions
     const FILE_TYPES = {
@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 
 const UploadHistory = (() => {
-    const HISTORY_ENDPOINT = '../api/upload-history.php';
+    const HISTORY_ENDPOINT = '../api/upload-history.js';
 
     let historyTbody;
     let historyEmpty;

@@ -77,7 +77,7 @@ const OrgChart = (() => {
         showLoading();
 
         try {
-            const data = await API.get(`orgchart.php?date=${encodeURIComponent(date)}`);
+            const data = await API.get(`orgchart.js?date=${encodeURIComponent(date)}`);
 
             if (data.success) {
                 currentNodes = data.nodes || [];
